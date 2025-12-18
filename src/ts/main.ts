@@ -1,4 +1,5 @@
 import '../scss/styles.scss'
+import { RefereeSignalRClient } from './referee-signalr-client.ts';
 
 const ulEvents = document.getElementById("ul-events") as HTMLUListElement;
 const textboxCommand = document.getElementById("textbox-command") as HTMLInputElement;
@@ -12,16 +13,38 @@ textboxCommand.addEventListener("keydown", function (event) {
 
 btnSendCommand.addEventListener("click", _ => commitText());
 
+const refereeClient = new RefereeSignalRClient(addTextLine);
+await refereeClient.start();
+
+refereeClient.onPong((payload: string) => addTextLine(`PONG: ${payload}`, "success"));
+
 function commitText() {
   if (textboxCommand.value == "") {
     return;
   }
 
-  addTextLine(textboxCommand.value);
+  const fullCommand = textboxCommand.value.split(/\s+/);
+
+  switch (fullCommand[0].toLowerCase()) {
+    case "ping":
+      refereeClient.ping(fullCommand[1]);
+      break;
+  }
+
   textboxCommand.value = "";
 }
 
-function addTextLine(text: string, type?: string) {
+type BootstrapListItemType =
+| "primary"
+| "secondary"
+| "success"
+| "danger"
+| "warning"
+| "info"
+| "light"
+| "dark";
+
+function addTextLine(text: string, type?: BootstrapListItemType) {
   const node = document.createElement("li");
   node.innerText = text;
   node.classList.add("list-group-item")
