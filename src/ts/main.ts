@@ -1,5 +1,5 @@
 import '../scss/styles.scss'
-import { RefereeSignalRClient } from './referee-signalr-client.ts';
+import { RefereeSignalRClient, RoomEvent } from './referee-signalr-client.ts';
 
 const ulEvents = document.getElementById("ul-events") as HTMLUListElement;
 const textboxCommand = document.getElementById("textbox-command") as HTMLInputElement;
@@ -16,7 +16,7 @@ btnSendCommand.addEventListener("click", _ => commitText());
 const refereeClient = new RefereeSignalRClient(addTextLine);
 await refereeClient.start();
 
-refereeClient.onPong((payload: string) => addTextLine(`PONG: ${payload}`, "success"));
+refereeClient.onRoomEventLogged((ev: RoomEvent) => addTextLine(JSON.stringify(ev)));
 
 function commitText() {
   if (textboxCommand.value == "") {
@@ -26,8 +26,12 @@ function commitText() {
   const fullCommand = textboxCommand.value.split(/\s+/);
 
   switch (fullCommand[0].toLowerCase()) {
-    case "ping":
-      refereeClient.ping(fullCommand[1]);
+    case "watch":
+      refereeClient.startWatching(Number.parseInt(fullCommand[1]));
+      break;
+
+    case "unwatch":
+      refereeClient.stopWatching(Number.parseInt(fullCommand[0]));
       break;
   }
 
@@ -35,14 +39,14 @@ function commitText() {
 }
 
 type BootstrapListItemType =
-| "primary"
-| "secondary"
-| "success"
-| "danger"
-| "warning"
-| "info"
-| "light"
-| "dark";
+  | "primary"
+  | "secondary"
+  | "success"
+  | "danger"
+  | "warning"
+  | "info"
+  | "light"
+  | "dark";
 
 function addTextLine(text: string, type?: BootstrapListItemType) {
   const node = document.createElement("li");
