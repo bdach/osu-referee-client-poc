@@ -16,6 +16,7 @@ btnSendCommand.addEventListener("click", _ => commitText());
 const refereeClient = new RefereeSignalRClient(addTextLine);
 await refereeClient.start();
 
+refereeClient.onPong((msg: string) => addTextLine(`PONG: ${msg}`));
 refereeClient.onRoomEventLogged((ev: RoomEvent) => addTextLine(JSON.stringify(ev)));
 
 function commitText() {
@@ -26,6 +27,10 @@ function commitText() {
   const fullCommand = textboxCommand.value.split(/\s+/);
 
   switch (fullCommand[0].toLowerCase()) {
+    case "ping":
+      refereeClient.ping(fullCommand.slice(1).join(" "));
+      break;
+
     case "watch":
       refereeClient.startWatching(Number.parseInt(fullCommand[1]));
       break;

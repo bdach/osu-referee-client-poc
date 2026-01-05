@@ -45,7 +45,7 @@ export class RefereeSignalRClient {
     formData.append("client_id", import.meta.env.VITE_WEB_CLIENT_ID);
     formData.append("client_secret", import.meta.env.VITE_WEB_CLIENT_SECRET);
     formData.append("grant_type", "client_credentials");
-    formData.append("scope", "public");
+    formData.append("scope", "delegate");
 
     this._logCallback("Requesting oauth token.", "info");
     const response = await fetch(
@@ -85,6 +85,11 @@ export class RefereeSignalRClient {
     }
   }
 
+  async ping(message: string)
+  {
+    await this._connection?.invoke("Ping", message);
+  }
+
   async startWatching(roomId: number)
   {
     await this._connection?.invoke("StartWatching", roomId);
@@ -95,7 +100,13 @@ export class RefereeSignalRClient {
     await this._connection?.invoke("StopWatching", roomId);
   }
 
-  onRoomEventLogged(callback: (ev: RoomEvent) => void) {
+  onPong(callback: (msg: string) => void)
+  {
+    this._connection?.on("Pong", callback);
+  }
+
+  onRoomEventLogged(callback: (ev: RoomEvent) => void)
+  {
     this._connection?.on("RoomEventLogged", function (rawEvent)
     {
       switch (rawEvent.event_type)
