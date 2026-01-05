@@ -32,19 +32,51 @@ export type RoomEvent =
   | { event_type: 'game_completed'; room_id: number; playlist_item_id: number };
 
 export class RefereeSignalRClient {
-  private readonly _connection: HubConnection;
+  private _connection?: HubConnection;
   private readonly _logCallback: LogCallback;
 
   constructor(logCallback: LogCallback) {
-    this._connection = new HubConnectionBuilder()
-      .withUrl("http://127.0.0.1:8081/referee")
-      .configureLogging(LogLevel.Information)
-      .build();
     this._logCallback = logCallback;
   }
 
   async start()
   {
+    const formData = new FormData();
+    formData.append("client_id", import.meta.env.VITE_WEB_CLIENT_ID);
+    formData.append("client_secret", import.meta.env.VITE_WEB_CLIENT_SECRET);
+    formData.append("grant_type", "client_credentials");
+    formData.append("scope", "public");
+
+    this._logCallback("Requesting oauth token.", "info");
+    const response = await fetch(
+        import.meta.env.VITE_WEB_OAUTH_URL,
+        {
+          method: "POST",
+          body: formData,
+        });
+
+    if (!response.ok) {
+      this._logCallback("Failed to retrieve oauth token.", "danger");
+      return;
+    }
+
+    const responseJson = await response.json();
+    if (responseJson.access_token == null) {
+      this._logCallback("Failed to retrieve oauth token.", "danger");
+      return;
+    }
+
+    this._logCallback("oauth token successfully retrieved.", "success");
+
+    this._connection = new HubConnectionBuilder()
+      .withUrl(import.meta.env.VITE_REFEREE_HUB_URL, {
+        headers: {
+          "Authorization": `Bearer ${responseJson.access_token}`,
+        }
+      })
+      .configureLogging(LogLevel.Information)
+      .build();
+
     try {
       await this._connection.start();
       this._logCallback("Connected to referee hub.", "info");
@@ -55,16 +87,16 @@ export class RefereeSignalRClient {
 
   async startWatching(roomId: number)
   {
-    await this._connection.invoke("StartWatching", roomId);
+    await this._connection?.invoke("StartWatching", roomId);
   }
 
   async stopWatching(roomId: number)
   {
-    await this._connection.invoke("StopWatching", roomId);
+    await this._connection?.invoke("StopWatching", roomId);
   }
 
   onRoomEventLogged(callback: (ev: RoomEvent) => void) {
-    this._connection.on("RoomEventLogged", function (rawEvent)
+    this._connection?.on("RoomEventLogged", function (rawEvent)
     {
       switch (rawEvent.event_type)
       {
