@@ -34,9 +34,11 @@ export type RoomEvent =
 export class RefereeSignalRClient {
   private _connection?: HubConnection;
   private readonly _logCallback: LogCallback;
+  private readonly _authorizationCode: string;
 
-  constructor(logCallback: LogCallback) {
+  constructor(logCallback: LogCallback, authorizationCode: string) {
     this._logCallback = logCallback;
+    this._authorizationCode = authorizationCode;
   }
 
   async start()
@@ -44,12 +46,13 @@ export class RefereeSignalRClient {
     const formData = new FormData();
     formData.append("client_id", import.meta.env.VITE_WEB_CLIENT_ID);
     formData.append("client_secret", import.meta.env.VITE_WEB_CLIENT_SECRET);
-    formData.append("grant_type", "client_credentials");
-    formData.append("scope", "delegate");
+    formData.append("code", this._authorizationCode);
+    formData.append("grant_type", "authorization_code");
+    formData.append("redirect_uri", "http://localhost:5173")
 
     this._logCallback("Requesting oauth token.", "info");
     const response = await fetch(
-        import.meta.env.VITE_WEB_OAUTH_URL,
+        import.meta.env.VITE_WEB_OAUTH_TOKEN_URL,
         {
           method: "POST",
           body: formData,
@@ -78,8 +81,9 @@ export class RefereeSignalRClient {
       .build();
 
     try {
+      this._logCallback("Connecting to referee hub...", "info")
       await this._connection.start();
-      this._logCallback("Connected to referee hub.", "info");
+      this._logCallback("Connected to referee hub.", "success");
     } catch (err) {
       this._logCallback(`Error when connecting to referee hub: ${err}`, "danger");
     }

@@ -4,20 +4,50 @@ import { RefereeSignalRClient, RoomEvent } from './referee-signalr-client.ts';
 const ulEvents = document.getElementById("ul-events") as HTMLUListElement;
 const textboxCommand = document.getElementById("textbox-command") as HTMLInputElement;
 const btnSendCommand = document.getElementById("btn-send-command") as HTMLButtonElement;
+const btnLogOut = document.getElementById("btn-log-out") as HTMLButtonElement;
 
-textboxCommand.addEventListener("keydown", function (event) {
-  if (event.key === "Enter") {
-    commitText();
-  }
-})
+let refereeClient: RefereeSignalRClient | undefined = undefined;
 
-btnSendCommand.addEventListener("click", _ => commitText());
+const urlParams = new URLSearchParams(window.location.search);
 
-const refereeClient = new RefereeSignalRClient(addTextLine);
-await refereeClient.start();
+if (urlParams.has("code"))
+{
+  refereeClient = new RefereeSignalRClient(addTextLine, urlParams.get("code")!);
+  await refereeClient.start();
 
-refereeClient.onPong((msg: string) => addTextLine(`PONG: ${msg}`));
-refereeClient.onRoomEventLogged((ev: RoomEvent) => addTextLine(JSON.stringify(ev)));
+  refereeClient.onPong((msg: string) => addTextLine(`PONG: ${msg}`));
+  refereeClient.onRoomEventLogged((ev: RoomEvent) =>
+    addTextLine(JSON.stringify(ev)),
+  );
+
+  textboxCommand.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      commitText();
+    }
+  });
+  btnSendCommand.addEventListener('click', (_) => commitText());
+  btnLogOut.addEventListener('click', (_) => window.location.search = "");
+}
+else
+{
+  textboxCommand.setAttribute("disabled", "disabled");
+  btnSendCommand.setAttribute("disabled", "disabled");
+  btnLogOut.setAttribute("disabled", "disabled");
+
+  const node = document.createElement("li");
+
+  const url = new URL(import.meta.env.VITE_WEB_OAUTH_AUTHORIZE_URL);
+  const params = url.searchParams;
+  params.append("client_id", import.meta.env.VITE_WEB_CLIENT_ID);
+  params.append("redirect_uri", "http://localhost:5173");
+  params.append("response_type", "code");
+  params.append("scope", "public multiplayer.write");
+
+  node.innerHTML = `<a href="${url.toString()}">Please log in with osu! to continue.</a>`
+  node.classList.add('list-group-item');
+  node.classList.add('list-group-item-primary');
+  ulEvents.appendChild(node);
+}
 
 function commitText() {
   if (textboxCommand.value == "") {
@@ -28,15 +58,15 @@ function commitText() {
 
   switch (fullCommand[0].toLowerCase()) {
     case "ping":
-      refereeClient.ping(fullCommand.slice(1).join(" "));
+      refereeClient?.ping(fullCommand.slice(1).join(" "));
       break;
 
     case "watch":
-      refereeClient.startWatching(Number.parseInt(fullCommand[1]));
+      refereeClient?.startWatching(Number.parseInt(fullCommand[1]));
       break;
 
     case "unwatch":
-      refereeClient.stopWatching(Number.parseInt(fullCommand[0]));
+      refereeClient?.stopWatching(Number.parseInt(fullCommand[0]));
       break;
   }
 
