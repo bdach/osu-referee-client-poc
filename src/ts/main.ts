@@ -61,12 +61,20 @@ function commitText() {
       refereeClient?.ping(fullCommand.slice(1).join(" "));
       break;
 
-    case "watch":
-      refereeClient?.startWatching(Number.parseInt(fullCommand[1]));
+    case "make":
+      refereeClient?.makeRoom(fullCommand.slice(1).join(" "));
       break;
 
-    case "unwatch":
-      refereeClient?.stopWatching(Number.parseInt(fullCommand[0]));
+    case "close":
+      refereeClient?.closeRoom();
+      break;
+
+    case "add":
+      refereeClient?.invitePlayer(Number.parseInt(fullCommand[1]));
+      break;
+
+    case "kick":
+      refereeClient?.kickUser(Number.parseInt(fullCommand[1]));
       break;
   }
 

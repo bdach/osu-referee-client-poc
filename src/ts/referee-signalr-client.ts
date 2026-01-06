@@ -73,9 +73,7 @@ export class RefereeSignalRClient {
 
     this._connection = new HubConnectionBuilder()
       .withUrl(import.meta.env.VITE_REFEREE_HUB_URL, {
-        headers: {
-          "Authorization": `Bearer ${responseJson.access_token}`,
-        }
+        accessTokenFactory: () => responseJson.access_token,
       })
       .configureLogging(LogLevel.Information)
       .build();
@@ -102,6 +100,36 @@ export class RefereeSignalRClient {
   async stopWatching(roomId: number)
   {
     await this._connection?.invoke("StopWatching", roomId);
+  }
+
+  async makeRoom(name: string)
+  {
+    if (!this._connection) {
+      return;
+    }
+
+    const roomId: number = await this._connection.invoke("MakeRoom", name);
+    this._logCallback(`Room ${name} created (id:${roomId})`, "success");
+  }
+
+  async closeRoom()
+  {
+    if (!this._connection) {
+      return;
+    }
+
+    const roomId: number = await this._connection.invoke("CloseRoom");
+    this._logCallback(`Room closed (id:${roomId})`);
+  }
+
+  async invitePlayer(userId: number)
+  {
+    await this._connection?.invoke("InvitePlayer", userId);
+  }
+
+  async kickUser(userId: number)
+  {
+    await this._connection?.invoke("KickUser", userId);
   }
 
   onPong(callback: (msg: string) => void)
