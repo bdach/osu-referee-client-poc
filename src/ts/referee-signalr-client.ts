@@ -10,6 +10,19 @@ export type RoomType =
 
 export type Team = "blue" | "red";
 
+export enum MatchType
+{
+  HeadToHead = 1,
+  TeamVersus = 2,
+  Matchmaking = 3,
+}
+
+export interface APIMod
+{
+  acronym: string;
+  settings?: Partial<Record<string, any>>;
+}
+
 export interface MatchStartedEventDetail {
   room_type: RoomType;
   teams?: Partial<Record<number, Team>>;
@@ -104,10 +117,6 @@ export class RefereeSignalRClient {
 
   async makeRoom(rulesetId: number, beatmapId: number, name: string)
   {
-    if (!this._connection) {
-      return;
-    }
-
     const roomId: number | undefined = await this.invoke("MakeRoom", rulesetId, beatmapId, name);
     if (roomId != null)
       this._logCallback(`Room ${name} created (id:${roomId})`, "success");
@@ -115,14 +124,25 @@ export class RefereeSignalRClient {
 
   async closeRoom()
   {
-    if (!this._connection) {
-      return;
-    }
-
     const roomId: number | undefined = await this.invoke("CloseRoom");
     if (roomId != null) {
       this._logCallback(`Room closed (id:${roomId})`, 'success');
     }
+  }
+
+  async setRoomName(name: string)
+  {
+    await this.invoke("SetRoomName", name);
+  }
+
+  async setRoomPassword(password: string)
+  {
+    await this.invoke("SetRoomPassword", password);
+  }
+
+  async setMatchType(matchType: MatchType)
+  {
+    await this.invoke("SetMatchType", matchType);
   }
 
   async invitePlayer(userId: number)
@@ -130,17 +150,63 @@ export class RefereeSignalRClient {
     await this.invoke("InvitePlayer", userId);
   }
 
+  async setHost(userId: number)
+  {
+    await this.invoke("SetHost", userId);
+  }
+
   async kickUser(userId: number)
   {
     await this.invoke("KickUser", userId);
   }
 
+  async setBeatmap(beatmapId: number, rulesetId?: number)
+  {
+    await this.invoke("SetBeatmap", beatmapId, rulesetId);
+  }
+
+  async setRequiredMods(mods: APIMod[])
+  {
+    await this.invoke("SetRequiredMods", mods);
+  }
+
+  async setAllowedMods(mods: APIMod[])
+  {
+    await this.invoke("SetAllowedMods", mods);
+  }
+
+  async setFreestyle(enabled: boolean)
+  {
+    await this.invoke("SetFreestyle", enabled);
+  }
+
+  async startGameplay(countdown?: number)
+  {
+    await this.invoke("StartGameplay", countdown);
+  }
+
+  async abortGameplayCountdown()
+  {
+    await this.invoke("AbortGameplayCountdown");
+  }
+
+  async abortGameplay()
+  {
+    await this.invoke("AbortGameplay");
+  }
+
   private async invoke<T = any>(methodName: string, ...args: any[]) : Promise<T | undefined> {
+    if (this._connection == null) {
+      this._logCallback(`Dropping request to ${methodName}: Connection not established!`);
+      return undefined;
+    }
+
     try {
       return await this._connection?.invoke<T>(methodName, ...args);
     }
     catch (err) {
       this._logCallback(`Error invoking ${methodName}: ${err}`, "danger");
+      return undefined;
     }
   }
 

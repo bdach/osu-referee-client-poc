@@ -1,5 +1,10 @@
 import '../scss/styles.scss'
-import { RefereeSignalRClient, RoomEvent } from './referee-signalr-client.ts';
+import {
+  APIMod,
+  MatchType,
+  RefereeSignalRClient,
+  RoomEvent,
+} from './referee-signalr-client.ts';
 
 const ulEvents = document.getElementById("ul-events") as HTMLUListElement;
 const textboxCommand = document.getElementById("textbox-command") as HTMLInputElement;
@@ -69,12 +74,65 @@ function commitText() {
       refereeClient?.closeRoom();
       break;
 
+    case "name":
+      refereeClient?.setRoomName(fullCommand.slice(1).join(" "));
+      break;
+
+    case "password":
+      refereeClient?.setRoomPassword(fullCommand.slice(1).join(" "));
+      break;
+
+    case "matchtype":
+      // this bad but i cant figure out what TS doesnt like about it
+      const type: any = MatchType[fullCommand[1] as any];
+      if (type != null)
+        refereeClient?.setMatchType(type);
+      break;
+
     case "add":
       refereeClient?.invitePlayer(Number.parseInt(fullCommand[1]));
       break;
 
+    case "host":
+      refereeClient?.setHost(Number.parseInt(fullCommand[1]));
+      break;
+
     case "kick":
       refereeClient?.kickUser(Number.parseInt(fullCommand[1]));
+      break;
+
+    case "map":
+      const beatmapId = Number.parseInt(fullCommand[1]);
+      const rulesetId: number | undefined = fullCommand.length > 2 ? Number.parseInt(fullCommand[2]) : undefined;
+      refereeClient?.setBeatmap(beatmapId, rulesetId);
+      break;
+
+    case "mods":
+      const mods = JSON.parse(fullCommand[1]) as APIMod[];
+      if (mods != null)
+        refereeClient?.setRequiredMods(mods);
+      break;
+
+    case "freemods":
+      const freeMods = JSON.parse(fullCommand[1]) as APIMod[];
+      if (freeMods != null)
+        refereeClient?.setAllowedMods(freeMods);
+      break;
+
+    case "freestyle":
+      refereeClient?.setFreestyle(fullCommand[1] == "1"); // lol. lmao even
+      break;
+
+    case "start":
+      refereeClient?.startGameplay(fullCommand.length > 1 ? Number.parseInt(fullCommand[1]) : undefined);
+      break;
+
+    case "aborttimer":
+      refereeClient?.abortGameplayCountdown();
+      break;
+
+    case "abort":
+      refereeClient?.abortGameplay();
       break;
   }
 
