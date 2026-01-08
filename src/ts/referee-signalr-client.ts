@@ -102,13 +102,13 @@ export class RefereeSignalRClient {
     await this._connection?.invoke("StopWatching", roomId);
   }
 
-  async makeRoom(name: string)
+  async makeRoom(rulesetId: number, beatmapId: number, name: string)
   {
     if (!this._connection) {
       return;
     }
 
-    const roomId: number = await this._connection.invoke("MakeRoom", name);
+    const roomId: number = await this._connection.invoke("MakeRoom", rulesetId, beatmapId, name);
     this._logCallback(`Room ${name} created (id:${roomId})`, "success");
   }
 

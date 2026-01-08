@@ -62,7 +62,7 @@ function commitText() {
       break;
 
     case "make":
-      refereeClient?.makeRoom(fullCommand.slice(1).join(" "));
+      refereeClient?.makeRoom(Number.parseInt(fullCommand[1]), Number.parseInt(fullCommand[2]), fullCommand.slice(3).join(" "));
       break;
 
     case "close":
