@@ -89,17 +89,17 @@ export class RefereeSignalRClient {
 
   async ping(message: string)
   {
-    await this._connection?.invoke("Ping", message);
+    await this.invoke("Ping", message);
   }
 
   async startWatching(roomId: number)
   {
-    await this._connection?.invoke("StartWatching", roomId);
+    await this.invoke("StartWatching", roomId);
   }
 
   async stopWatching(roomId: number)
   {
-    await this._connection?.invoke("StopWatching", roomId);
+    await this.invoke("StopWatching", roomId);
   }
 
   async makeRoom(rulesetId: number, beatmapId: number, name: string)
@@ -108,8 +108,9 @@ export class RefereeSignalRClient {
       return;
     }
 
-    const roomId: number = await this._connection.invoke("MakeRoom", rulesetId, beatmapId, name);
-    this._logCallback(`Room ${name} created (id:${roomId})`, "success");
+    const roomId: number | undefined = await this.invoke("MakeRoom", rulesetId, beatmapId, name);
+    if (roomId != null)
+      this._logCallback(`Room ${name} created (id:${roomId})`, "success");
   }
 
   async closeRoom()
@@ -118,18 +119,29 @@ export class RefereeSignalRClient {
       return;
     }
 
-    const roomId: number = await this._connection.invoke("CloseRoom");
-    this._logCallback(`Room closed (id:${roomId})`);
+    const roomId: number | undefined = await this.invoke("CloseRoom");
+    if (roomId != null) {
+      this._logCallback(`Room closed (id:${roomId})`, 'success');
+    }
   }
 
   async invitePlayer(userId: number)
   {
-    await this._connection?.invoke("InvitePlayer", userId);
+    await this.invoke("InvitePlayer", userId);
   }
 
   async kickUser(userId: number)
   {
-    await this._connection?.invoke("KickUser", userId);
+    await this.invoke("KickUser", userId);
+  }
+
+  private async invoke<T = any>(methodName: string, ...args: any[]) : Promise<T | undefined> {
+    try {
+      return await this._connection?.invoke<T>(methodName, ...args);
+    }
+    catch (err) {
+      this._logCallback(`Error invoking ${methodName}: ${err}`, "danger");
+    }
   }
 
   onPong(callback: (msg: string) => void)
