@@ -71,68 +71,69 @@ function commitText() {
       break;
 
     case "close":
-      refereeClient?.closeRoom();
+      refereeClient?.closeRoom(Number.parseInt(fullCommand[1]));
       break;
 
     case "name":
-      refereeClient?.setRoomName(fullCommand.slice(1).join(" "));
+      refereeClient?.setRoomName(Number.parseInt(fullCommand[1]), fullCommand.slice(2).join(" "));
       break;
 
     case "password":
-      refereeClient?.setRoomPassword(fullCommand.slice(1).join(" "));
+      refereeClient?.setRoomPassword(Number.parseInt(fullCommand[1]), fullCommand.slice(2).join(" "));
       break;
 
     case "matchtype":
       // this bad but i cant figure out what TS doesnt like about it
-      const type: any = MatchType[fullCommand[1] as any];
+      const type: any = MatchType[fullCommand[2] as any];
       if (type != null)
-        refereeClient?.setMatchType(type);
+        refereeClient?.setMatchType(Number.parseInt(fullCommand[1]), type);
       break;
 
     case "add":
-      refereeClient?.invitePlayer(Number.parseInt(fullCommand[1]));
+      refereeClient?.invitePlayer(Number.parseInt(fullCommand[1]), Number.parseInt(fullCommand[2]));
       break;
 
     case "host":
-      refereeClient?.setHost(Number.parseInt(fullCommand[1]));
+      refereeClient?.setHost(Number.parseInt(fullCommand[1]), Number.parseInt(fullCommand[2]));
       break;
 
     case "kick":
-      refereeClient?.kickUser(Number.parseInt(fullCommand[1]));
+      refereeClient?.kickUser(Number.parseInt(fullCommand[1]), Number.parseInt(fullCommand[2]));
       break;
 
     case "map":
-      const beatmapId = Number.parseInt(fullCommand[1]);
-      const rulesetId: number | undefined = fullCommand.length > 2 ? Number.parseInt(fullCommand[2]) : undefined;
-      refereeClient?.setBeatmap(beatmapId, rulesetId);
+      const roomId = Number.parseInt(fullCommand[1]);
+      const beatmapId = Number.parseInt(fullCommand[2]);
+      const rulesetId: number | undefined = fullCommand.length > 3 ? Number.parseInt(fullCommand[3]) : undefined;
+      refereeClient?.setBeatmap(roomId, beatmapId, rulesetId);
       break;
 
     case "mods":
-      const mods = JSON.parse(fullCommand[1]) as APIMod[];
+      const mods = JSON.parse(fullCommand[2]) as APIMod[];
       if (mods != null)
-        refereeClient?.setRequiredMods(mods);
+        refereeClient?.setRequiredMods(Number.parseInt(fullCommand[1]), mods);
       break;
 
     case "freemods":
-      const freeMods = JSON.parse(fullCommand[1]) as APIMod[];
+      const freeMods = JSON.parse(fullCommand[2]) as APIMod[];
       if (freeMods != null)
-        refereeClient?.setAllowedMods(freeMods);
+        refereeClient?.setAllowedMods(Number.parseInt(fullCommand[1]), freeMods);
       break;
 
     case "freestyle":
-      refereeClient?.setFreestyle(fullCommand[1] == "1"); // lol. lmao even
+      refereeClient?.setFreestyle(Number.parseInt(fullCommand[1]), fullCommand[2] == "1"); // lol. lmao even
       break;
 
     case "start":
-      refereeClient?.startGameplay(fullCommand.length > 1 ? Number.parseInt(fullCommand[1]) : undefined);
+      refereeClient?.startGameplay(Number.parseInt(fullCommand[1]), fullCommand.length > 2 ? Number.parseInt(fullCommand[2]) : undefined);
       break;
 
     case "aborttimer":
-      refereeClient?.abortGameplayCountdown();
+      refereeClient?.abortGameplayCountdown(Number.parseInt(fullCommand[1]));
       break;
 
     case "abort":
-      refereeClient?.abortGameplay();
+      refereeClient?.abortGameplay(Number.parseInt(fullCommand[1]));
       break;
   }
 

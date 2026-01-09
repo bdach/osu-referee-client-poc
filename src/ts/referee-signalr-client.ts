@@ -122,77 +122,75 @@ export class RefereeSignalRClient {
       this._logCallback(`Room ${name} created (id:${roomId})`, "success");
   }
 
-  async closeRoom()
+  async closeRoom(roomId: number)
   {
-    const roomId: number | undefined = await this.invoke("CloseRoom");
-    if (roomId != null) {
+    if (await this.invoke("CloseRoom", roomId))
       this._logCallback(`Room closed (id:${roomId})`, 'success');
-    }
   }
 
-  async setRoomName(name: string)
+  async setRoomName(roomId: number, name: string)
   {
-    await this.invoke("SetRoomName", name);
+    await this.invoke("SetRoomName", roomId, name);
   }
 
-  async setRoomPassword(password: string)
+  async setRoomPassword(roomId: number, password: string)
   {
-    await this.invoke("SetRoomPassword", password);
+    await this.invoke("SetRoomPassword", roomId, password);
   }
 
-  async setMatchType(matchType: MatchType)
+  async setMatchType(roomId: number, matchType: MatchType)
   {
-    await this.invoke("SetMatchType", matchType);
+    await this.invoke("SetMatchType", roomId, matchType);
   }
 
-  async invitePlayer(userId: number)
+  async invitePlayer(roomId: number, userId: number)
   {
-    await this.invoke("InvitePlayer", userId);
+    await this.invoke("InvitePlayer", roomId, userId);
   }
 
-  async setHost(userId: number)
+  async setHost(roomId: number, userId: number)
   {
-    await this.invoke("SetHost", userId);
+    await this.invoke("SetHost", roomId, userId);
   }
 
-  async kickUser(userId: number)
+  async kickUser(roomId: number, userId: number)
   {
-    await this.invoke("KickUser", userId);
+    await this.invoke("KickUser", roomId, userId);
   }
 
-  async setBeatmap(beatmapId: number, rulesetId?: number)
+  async setBeatmap(roomId: number, beatmapId: number, rulesetId?: number)
   {
-    await this.invoke("SetBeatmap", beatmapId, rulesetId);
+    await this.invoke("SetBeatmap", roomId, beatmapId, rulesetId);
   }
 
-  async setRequiredMods(mods: APIMod[])
+  async setRequiredMods(roomId: number, mods: APIMod[])
   {
-    await this.invoke("SetRequiredMods", mods);
+    await this.invoke("SetRequiredMods", roomId, mods);
   }
 
-  async setAllowedMods(mods: APIMod[])
+  async setAllowedMods(roomId: number, mods: APIMod[])
   {
-    await this.invoke("SetAllowedMods", mods);
+    await this.invoke("SetAllowedMods", roomId, mods);
   }
 
-  async setFreestyle(enabled: boolean)
+  async setFreestyle(roomId: number, enabled: boolean)
   {
-    await this.invoke("SetFreestyle", enabled);
+    await this.invoke("SetFreestyle", roomId, enabled);
   }
 
-  async startGameplay(countdown?: number)
+  async startGameplay(roomId: number, countdown?: number)
   {
-    await this.invoke("StartGameplay", countdown);
+    await this.invoke("StartGameplay", roomId, countdown);
   }
 
-  async abortGameplayCountdown()
+  async abortGameplayCountdown(roomId: number)
   {
-    await this.invoke("AbortGameplayCountdown");
+    await this.invoke("AbortGameplayCountdown", roomId);
   }
 
-  async abortGameplay()
+  async abortGameplay(roomId: number)
   {
-    await this.invoke("AbortGameplay");
+    await this.invoke("AbortGameplay", roomId);
   }
 
   private async invoke<T = any>(methodName: string, ...args: any[]) : Promise<T | undefined> {
