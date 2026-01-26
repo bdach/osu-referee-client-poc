@@ -1,5 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import Main from "./main";
+import "./scss/styles.scss";
 
 const root = createRoot(document.body);
-root.render(<h1>a quick brown fox jumps over the lazy dog</h1>)
+root.render(<Main />)
