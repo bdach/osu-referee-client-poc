@@ -1,27 +1,42 @@
-import { Component } from "react";
+import {Component} from "react";
 import Room from "../models/Room";
+import RefereeClient from "../models/RefereeClient";
+import CommandParser from "../models/CommandParser";
+import {Event, EventType, HasEvents} from "../models/Event";
+import renderEvent from "./events";
 
 interface RoomState
 {
     rooms: Room[];
-    activeRoom?: Room;
+    activeEventStream: HasEvents;
     currentCommand: string;
 }
 
-export default class RoomsView extends Component<unknown, RoomState>
+export interface Props {
+    client: RefereeClient;
+}
+
+export default class RoomsView extends Component<Props, RoomState>
 {
-    constructor(props: unknown) {
+    private parser: CommandParser;
+
+    constructor(props: Props) {
         super(props);
+        this.parser = new CommandParser(props.client);
         this.state = {
             rooms:
             [
-                { id: 1, name: 'first', events: [] },
-                { id: 2, name: 'second', events: ['thing 1', 'thing 2'] },
-                { id: 3, name: 'third', events: ['thing 3'] },
             ],
-            activeRoom: null,
+            activeEventStream: { events: [] },
             currentCommand: '',
         };
+
+        props.client.onPong(msg => {
+            this.postEvent(this.state.activeEventStream, {
+                type: EventType.SystemMessage,
+                message: msg
+            });
+        });
     }
 
     render() {
@@ -31,7 +46,7 @@ export default class RoomsView extends Component<unknown, RoomState>
                     <ul className='nav nav-tabs'>
                         {this.state.rooms.map((room: Room) => (
                             <li key={room.id} className='nav-item'>
-                                <a className={`nav-link ${room === this.state.activeRoom ? 'active' : ''}`}
+                                <a className={`nav-link ${room === this.state.activeEventStream ? 'active' : ''}`}
                                    href='#'
                                    onClick={this.activateRoom.bind(this, room)}>{room.name}</a>
                             </li>
@@ -40,21 +55,19 @@ export default class RoomsView extends Component<unknown, RoomState>
                 </div>
                 <div className='row mx-0 flex-grow-1 flex-shrink-1 overflow-y-auto'>
                     <ul className='list-group mx-0 px-0'>
-                        {this.state.activeRoom?.events.map(ev => (
-                            <li className='list-group-item'>{ev}</li>
-                        ))}
+                        {this.state.activeEventStream?.events.map(ev => renderEvent(ev))}
                     </ul>
                 </div>
                 <div className='row mx-0 mt-2 mb-3'>
                     <div className='input-group px-0'>
                         <input type='text'
                                className='form-control'
-                               placeholder={this.state.activeRoom == null ? "`!mp create` to create a room." : `Refereeing in room "${this.state.activeRoom.name}".`}
+                               placeholder={this.getPlaceholderText(this.state.activeEventStream)}
                                value={this.state.currentCommand}
                                onChange={e => this.updateCommand(e.target.value)}
-                               onKeyDown={e => {
+                               onKeyDown={async e => {
                                    if (e.key === 'Enter') {
-                                       this.submitCurrentCommand();
+                                       await this.submitCurrentCommand();
                                        e.preventDefault();
                                    }
                                }}
@@ -67,12 +80,20 @@ export default class RoomsView extends Component<unknown, RoomState>
         )
     }
 
+    private getPlaceholderText(stream: HasEvents | Room) {
+        if ("name" in stream) {
+            return `Refereeing in room "${stream.name}".`;
+        } else {
+            return "!mp create to create a room.";
+        }
+    }
+
     private activateRoom(room: Room)
     {
         this.setState(prevState => {
             return {
                 ...prevState,
-                activeRoom: room
+                activeEventStream: room
             }
         })
     }
@@ -87,30 +108,40 @@ export default class RoomsView extends Component<unknown, RoomState>
         });
     }
 
-    private submitCurrentCommand()
+    private async submitCurrentCommand()
     {
-        if (this.state.activeRoom == null)
-        {
-            this.setState(prevState => {
-                return {
-                    ...prevState,
-                    currentCommand: ''
-                }
-            })
+        try {
+            await this.parser.execute(this.state.currentCommand);
+        } catch (error) {
+            this.postEvent(this.state.activeEventStream, {
+                type: EventType.Error,
+                message: error.toString()
+            });
         }
-
-        const newEvents = [...this.state.activeRoom.events, this.state.currentCommand];
-        const newRoom = {
-            ...this.state.activeRoom,
-            events: newEvents
-        };
 
         this.setState(prevState => {
             return {
                 ...prevState,
-                rooms: prevState.rooms.map(room => room.id === newRoom.id ? newRoom : room),
-                activeRoom: newRoom,
                 currentCommand: ''
+            }
+        });
+    }
+
+    private postEvent(stream: HasEvents, event: Event)
+    {
+        const newEvents = [...stream.events, event];
+        const newStream = {
+            ...stream,
+            events: newEvents
+        };
+
+        const newRoom = newStream as Room;
+
+        this.setState(prevState => {
+            return {
+                ...prevState,
+                rooms: prevState.rooms.map(room => room.id === newRoom?.id ? newRoom : room),
+                activeEventStream: prevState.activeEventStream === stream ? newStream : prevState.activeEventStream,
             }
         });
     }

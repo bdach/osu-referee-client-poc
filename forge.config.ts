@@ -10,6 +10,7 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 
 import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
+import { OSU_WEB_URL, SPECTATOR_SERVER_URL } from "./config";
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -25,6 +26,7 @@ const config: ForgeConfig = {
   plugins: [
     new AutoUnpackNativesPlugin({}),
     new WebpackPlugin({
+      devContentSecurityPolicy: `default-src 'self' 'unsafe-inline' data: ${OSU_WEB_URL.host} ${SPECTATOR_SERVER_URL.host} ws://${SPECTATOR_SERVER_URL.host}; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:`,
       mainConfig,
       renderer: {
         config: rendererConfig,
