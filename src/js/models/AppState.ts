@@ -18,4 +18,4 @@ export interface UserCredentials
 export type OnlineState =
 | { state: 'not-logged-in', lastError?: string }
 | { state: 'logging-in' }
-| { state: 'logged-in', clientToken: string }
+| { state: 'logged-in' }
