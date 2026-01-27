@@ -1,4 +1,4 @@
-import {UserCredentials, UserState} from "../models/AppState";
+import {GrantType, UserCredentials, UserState} from "../models/AppState";
 import {useId, useState} from "react";
 
 interface Props
@@ -12,6 +12,7 @@ export default function LoginCard(props: Props) {
 
     const clientId = useId();
     const clientSecret = useId();
+    const grantType = useId();
 
     return (
         <div className='card position-absolute top-50 start-50 translate-middle' style={{'width': '20rem'}}>
@@ -36,6 +37,16 @@ export default function LoginCard(props: Props) {
                            maxLength={40}
                            value={credentials.clientSecret}
                            onChange={e => setCredentials({...credentials, clientSecret: e.target.value})}/>
+                </div>
+                <div className='mb-3'>
+                    <label htmlFor={grantType} className='form-label'>Grant type</label>
+                    <select className='form-select'
+                            value={credentials.grantType}
+                            onChange={e => setCredentials({...credentials, grantType: e.target.value as GrantType})}>
+                        {Object.values(GrantType).map(grantType => (
+                            <option key={grantType} value={grantType}>{grantType}</option>
+                        ))}
+                    </select>
                 </div>
                 {props.user.online.state === 'not-logged-in' && props.user.online.lastError && <div className='alert alert-danger'>{props.user.online.lastError}</div>}
                 <div>
