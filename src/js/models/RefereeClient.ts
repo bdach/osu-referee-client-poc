@@ -19,4 +19,8 @@ export default class RefereeClient
     {
         this.connection.on("Pong", callback);
     }
+
+    async disconnect() {
+        await this.connection.stop();
+    }
 }

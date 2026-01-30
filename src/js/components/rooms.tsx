@@ -14,6 +14,7 @@ interface RoomState
 
 export interface Props {
     client: RefereeClient;
+    onLogout: () => Promise<void>;
 }
 
 export default class RoomsView extends Component<Props, RoomState>
@@ -51,6 +52,8 @@ export default class RoomsView extends Component<Props, RoomState>
                                    onClick={this.activateRoom.bind(this, room)}>{room.name}</a>
                             </li>
                         ))}
+                        <div className='flex-fill' />
+                        <button type='button' className='btn btn-sm btn-danger align-self-center my-1' onClick={this.props.onLogout}>Log out</button>
                     </ul>
                 </div>
                 <div className='row mx-0 flex-grow-1 flex-shrink-1 overflow-y-auto'>

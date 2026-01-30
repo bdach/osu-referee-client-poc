@@ -1,5 +1,5 @@
-import { GrantType, UserCredentials, UserState } from "../models/AppState";
-import { useId, useState } from "react";
+import {GrantType, UserCredentials, UserState} from "../models/AppState";
+import {useId, useState} from "react";
 
 interface Props
 {
