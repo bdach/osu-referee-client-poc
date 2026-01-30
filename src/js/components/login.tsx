@@ -15,7 +15,7 @@ export default function LoginCard(props: Props) {
     const grantType = useId();
 
     return (
-        <div className='card position-absolute top-50 start-50 translate-middle' style={{'width': '20rem'}}>
+        <div className='card position-absolute top-50 start-50 translate-middle' style={{'width': '30rem'}}>
             <div className='card-body'>
                 <h5 className='card-title'>Log in with osu!</h5>
                 <div className='mb-3'>
@@ -48,6 +48,12 @@ export default function LoginCard(props: Props) {
                         ))}
                     </select>
                 </div>
+                {credentials.grantType === GrantType.ClientCredentials && <div className='alert alert-info'>The <code>client_credentials</code> flow is only supported for bot-owned OAuth clients.</div>}
+                {credentials.grantType === GrantType.AuthorizationCode
+                    && <div className='alert alert-info'>
+                        <p>The <code>authorization_code</code> flow is only supported for bot-owned OAuth clients (can act as any authorised account) or self-owned OAuth clients (can act as self only).</p>
+                        <p className='mb-0'>You will be redirected to the osu! website to authorise the account to act as.</p>
+                    </div>}
                 {props.user.online.state === 'not-logged-in' && props.user.online.lastError && <div className='alert alert-danger'>{props.user.online.lastError}</div>}
                 <div>
                     <button type='submit'
