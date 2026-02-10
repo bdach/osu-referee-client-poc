@@ -1,4 +1,4 @@
-import RefereeClient from "./RefereeClient";
+import RefereeClient from "./referee-client/main";
 
 export default interface AppState
 {

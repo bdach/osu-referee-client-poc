@@ -1,4 +1,4 @@
-import {HubConnection} from "@microsoft/signalr";
+import { HubConnection } from "@microsoft/signalr";
 
 export default class RefereeClient
 {

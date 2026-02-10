@@ -1,9 +1,9 @@
 import LoginCard from "./login";
-import {Component} from "react";
-import AppState, {GrantType, OnlineState, UserCredentials} from "../models/AppState";
+import { Component } from "react";
+import AppState, {GrantType, OnlineState, UserCredentials} from "../models/app-state";
 import RoomsView from "./rooms";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import RefereeClient from "../models/RefereeClient";
+import RefereeClient from "../models/referee-client/main";
 import { OSU_WEB_URL, SPECTATOR_SERVER_URL } from "../../../config";
 
 const LOCAL_STORAGE_CLIENT_ID_KEY = 'client_id';

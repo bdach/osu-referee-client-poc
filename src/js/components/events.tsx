@@ -1,4 +1,4 @@
-import * as Events from '../models/Event';
+import * as Events from '../models/event';
 
 export default function renderEvent(event: Events.Event) {
     switch (event.type) {

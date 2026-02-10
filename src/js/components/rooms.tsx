@@ -1,8 +1,8 @@
-import {Component} from "react";
-import Room from "../models/Room";
-import RefereeClient from "../models/RefereeClient";
-import CommandParser from "../models/CommandParser";
-import {Event, EventType, HasEvents} from "../models/Event";
+import { Component } from "react";
+import Room from "../models/room";
+import RefereeClient from "../models/referee-client/main";
+import CommandParser from "../models/command-parser";
+import { Event, EventType, HasEvents } from "../models/event";
 import renderEvent from "./events";
 
 interface RoomState
