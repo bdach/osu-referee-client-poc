@@ -1,8 +1,8 @@
-import { Component } from "react";
+import {Component} from "react";
 import Room from "../models/room";
 import RefereeClient from "../models/referee-client/main";
 import CommandParser from "../models/command-parser";
-import { Event, EventType, HasEvents } from "../models/event";
+import {Event, EventType, HasEvents} from "../models/event";
 import renderEvent from "./events";
 
 interface RoomState
@@ -32,12 +32,23 @@ export default class RoomsView extends Component<Props, RoomState>
             currentCommand: '',
         };
 
-        props.client.onPong(msg => {
-            this.postEvent(this.state.activeEventStream, {
-                type: EventType.SystemMessage,
-                message: msg
-            });
-        });
+        props.client.onPong(msg => this.postEvent(this.state.activeEventStream, { event_type: EventType.SystemMessage, message: msg }));
+
+        // there is probably a much better way to do this, but I don't know it.
+        // I tried generics briefly and they didn't work. so whatever.
+        // my primary goal here is not to be a type wizard (though it would be nice if I were one).
+        props.client.onUserJoined(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.UserJoined, ...msg }
+        ));
+        props.client.onUserLeft(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.UserLeft, ...msg }
+        ));
+        props.client.onUserKicked(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.UserKicked, ...msg }
+        ));
     }
 
     render() {
@@ -58,7 +69,9 @@ export default class RoomsView extends Component<Props, RoomState>
                 </div>
                 <div className='row mx-0 flex-grow-1 flex-shrink-1 overflow-y-auto'>
                     <ul className='list-group mx-0 px-0'>
-                        {this.state.activeEventStream?.events.map(ev => renderEvent(ev))}
+                        {this.state.activeEventStream?.events.map(ev => renderEvent(ev, {
+                            closeTab: this.closeCurrentStream.bind(this),
+                        }))}
                     </ul>
                 </div>
                 <div className='row mx-0 mt-2 mb-3'>
@@ -87,7 +100,7 @@ export default class RoomsView extends Component<Props, RoomState>
         if ("name" in stream) {
             return `Refereeing in room "${stream.name}".`;
         } else {
-            return "!mp create to create a room.";
+            return "`MAKE ruleset_id beatmap_id room_name` to create a room.";
         }
     }
 
@@ -114,10 +127,27 @@ export default class RoomsView extends Component<Props, RoomState>
     private async submitCurrentCommand()
     {
         try {
-            await this.parser.execute(this.state.currentCommand);
+            const result = await this.parser.execute((this.state.activeEventStream as Room).id, this.state.currentCommand);
+            if (result != null) {
+                if (result.event_type === EventType.RoomJoined)
+                {
+                    const newRoom: Room = { id: result.room_id, name: result.name, events: [result] };
+                    this.setState(prevState => {
+                        return {
+                            ...prevState,
+                            rooms: prevState.rooms.concat([newRoom]),
+                            activeEventStream: newRoom,
+                            currentCommand: ''
+                        }
+                    })
+                    return;
+                }
+
+                this.postEvent(this.state.rooms.find(room => room.id === result.room_id), result);
+            }
         } catch (error) {
             this.postEvent(this.state.activeEventStream, {
-                type: EventType.Error,
+                event_type: EventType.Error,
                 message: error.toString()
             });
         }
@@ -147,5 +177,23 @@ export default class RoomsView extends Component<Props, RoomState>
                 activeEventStream: prevState.activeEventStream === stream ? newStream : prevState.activeEventStream,
             }
         });
+    }
+
+    private closeCurrentStream()
+    {
+        const stream = this.state.activeEventStream;
+        if ("id" in stream) {
+            const closedRoom = stream as Room;
+            const newRooms = this.state.rooms.filter(room => room.id !== closedRoom.id);
+            const nextActiveEventStream: HasEvents = newRooms.length > 0 ? newRooms[0] : {events: []};
+
+            this.setState(prevState => {
+                return {
+                    ...prevState,
+                    rooms: newRooms,
+                    activeEventStream: nextActiveEventStream
+                }
+            })
+        }
     }
 }
