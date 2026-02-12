@@ -25,7 +25,7 @@ export type RoomEvent =
 | UserKickedEvent;
 
 export type RoomJoinedEvent = ({ event_type: EventType.RoomJoined } & ClientResponses.RoomJoinedResponse)
-export type RoomDisbandedEvent = ({ event_type: EventType.RoomDisbanded } & ClientEvents.RoomDisbandedEvent)
+export interface RoomDisbandedEvent { event_type: EventType.RoomDisbanded, room_id: number }
 export type UserJoinedEvent = ({ event_type: EventType.UserJoined } & ClientEvents.UserJoinedEvent)
 export type UserLeftEvent = ({ event_type: EventType.UserLeft } & ClientEvents.UserLeftEvent)
 export type UserKickedEvent = ({ event_type: EventType.UserKicked } & ClientEvents.UserKickedEvent);
