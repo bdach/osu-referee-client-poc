@@ -1,6 +1,12 @@
 import { HubConnection } from "@microsoft/signalr";
 import { RoomJoinedResponse } from "./responses";
 import * as Events from "./events";
+import {
+    ChangeRoomSettingsRequest,
+    EditCurrentPlaylistItemRequest, MakeRoomRequest,
+    MoveUserRequest,
+    StartMatchRequest
+} from "./requests";
 
 export default class RefereeClient
 {
@@ -16,9 +22,9 @@ export default class RefereeClient
         await this.connection.invoke("Ping", message);
     }
 
-    async makeRoom(rulesetId: number, beatmapId: number, roomName: string) : Promise<RoomJoinedResponse>
+    async makeRoom(request: MakeRoomRequest) : Promise<RoomJoinedResponse>
     {
-        return await this.connection.invoke("MakeRoom", rulesetId, beatmapId, roomName);
+        return await this.connection.invoke("MakeRoom", request);
     }
 
     async joinRoom(roomId: number) : Promise<RoomJoinedResponse>
@@ -46,6 +52,36 @@ export default class RefereeClient
         await this.connection.invoke("KickPlayer", roomId, userId);
     }
 
+    async changeRoomSettings(roomId: number, request: ChangeRoomSettingsRequest)
+    {
+        await this.connection.invoke("ChangeRoomSettings", roomId, request);
+    }
+
+    async editCurrentPlaylistItem(roomId: number, request: EditCurrentPlaylistItemRequest)
+    {
+        await this.connection.invoke("EditCurrentPlaylistItem", roomId, request);
+    }
+
+    async moveUser(roomId: number, request: MoveUserRequest)
+    {
+        await this.connection.invoke("MoveUser", roomId, request);
+    }
+
+    async startMatch(roomId: number, request: StartMatchRequest)
+    {
+        await this.connection.invoke("StartMatch", roomId, request);
+    }
+
+    async stopMatchCountdown(roomId: number)
+    {
+        await this.connection.invoke("StopMatchCountdown", roomId);
+    }
+
+    async abortMatch(roomId: number)
+    {
+        await this.connection.invoke("AbortMatch", roomId);
+    }
+
     onPong(callback: (message: string) => void)
     {
         this.connection.on("Pong", callback);
@@ -64,6 +100,61 @@ export default class RefereeClient
     onUserKicked(callback: (event: Events.UserKickedEvent) => void)
     {
         this.connection.on("UserKicked", callback);
+    }
+
+    onRoomSettingsChanged(callback: (event: Events.RoomSettingsChangedEvent) => void)
+    {
+        this.connection.on("RoomSettingsChanged", callback);
+    }
+
+    onPlaylistItemChanged(callback: (event: Events.PlaylistItemChangedEvent) => void)
+    {
+        this.connection.on("PlaylistItemChanged", callback);
+    }
+
+    onUserStatusChanged(callback: (event: Events.UserStatusChangedEvent) => void)
+    {
+        this.connection.on("UserStatusChanged", callback);
+    }
+
+    onUserModsChanged(callback: (event: Events.UserModsChangedEvent) => void)
+    {
+        this.connection.on("UserModsChanged", callback);
+    }
+
+    onUserStyleChanged(callback: (event: Events.UserStyleChangedEvent) => void)
+    {
+        this.connection.on("UserStyleChanged", callback);
+    }
+
+    onUserTeamChanged(callback: (event: Events.UserTeamChangedEvent) => void)
+    {
+        this.connection.on("UserTeamChanged", callback);
+    }
+
+    onCountdownStarted(callback: (event: Events.CountdownStartedEvent) => void)
+    {
+        this.connection.on("CountdownStarted", callback);
+    }
+
+    onCountdownStopped(callback: (event: Events.CountdownStoppedEvent) => void)
+    {
+        this.connection.on("CountdownStopped", callback);
+    }
+
+    onMatchStarted(callback: (event: Events.MatchStartedEvent) => void)
+    {
+        this.connection.on("MatchStarted", callback);
+    }
+
+    onMatchAborted(callback: (event: Events.MatchAbortedEvent) => void)
+    {
+        this.connection.on("MatchAborted", callback);
+    }
+
+    onMatchCompleted(callback: (event: Events.MatchCompletedEvent) => void)
+    {
+        this.connection.on("MatchCompleted", callback);
     }
 
     async disconnect() {

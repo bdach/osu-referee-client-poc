@@ -5,11 +5,23 @@ export enum EventType
 {
     SystemMessage = "system-message",
     Error = "error",
-    RoomJoined = "room-joined",
+
+    CountdownStarted = "countdown-started",
+    CountdownStopped = "countdown-stopped",
+    MatchAborted = "match-aborted",
+    MatchCompleted = "match-completed",
+    MatchStarted = "match-started",
+    PlaylistItemChanged = "playlist-item-changed",
     RoomDisbanded = "room-disbanded",
-    UserJoined = "player-joined",
-    UserLeft = "player-left",
-    UserKicked = "player-kicked",
+    RoomJoined = "room-joined",
+    RoomSettingsChanged = "room-settings-changed",
+    UserJoined = "user-joined",
+    UserKicked = "user-kicked",
+    UserLeft = "user-left",
+    UserModsChanged = "user-mods-changed",
+    UserStatusChanged = "user-status-changed",
+    UserStyleChanged = "user-style-changed",
+    UserTeamChanged = "user-team-changed",
 }
 
 export type Event =
@@ -18,17 +30,39 @@ export type Event =
 | RoomEvent
 
 export type RoomEvent =
-| RoomJoinedEvent
+| CountdownStartedEvent
+| CountdownStoppedEvent
+| MatchAbortedEvent
+| MatchCompletedEvent
+| MatchStartedEvent
+| PlaylistItemChangedEvent
 | RoomDisbandedEvent
+| RoomJoinedEvent
+| RoomSettingsChangedEvent
 | UserJoinedEvent
+| UserKickedEvent
 | UserLeftEvent
-| UserKickedEvent;
+| UserModsChangedEvent
+| UserStatusChangedEvent
+| UserStyleChangedEvent
+| UserTeamChangedEvent;
 
-export type RoomJoinedEvent = ({ event_type: EventType.RoomJoined } & ClientResponses.RoomJoinedResponse)
+export type CountdownStartedEvent = ({ event_type: EventType.CountdownStarted } & ClientEvents.CountdownStartedEvent);
+export type CountdownStoppedEvent = ({ event_type: EventType.CountdownStopped } & ClientEvents.CountdownStoppedEvent);
+export type MatchAbortedEvent = ({ event_type: EventType.MatchAborted } & ClientEvents.MatchAbortedEvent);
+export type MatchCompletedEvent = ({ event_type: EventType.MatchCompleted } & ClientEvents.MatchCompletedEvent);
+export type MatchStartedEvent = ({ event_type: EventType.MatchStarted } & ClientEvents.MatchStartedEvent);
+export type PlaylistItemChangedEvent = ({ event_type: EventType.PlaylistItemChanged } & ClientEvents.PlaylistItemChangedEvent);
+export type RoomJoinedEvent = ({ event_type: EventType.RoomJoined } & ClientResponses.RoomJoinedResponse);
+export type RoomSettingsChangedEvent = ({ event_type: EventType.RoomSettingsChanged } & ClientEvents.RoomSettingsChangedEvent);
 export interface RoomDisbandedEvent { event_type: EventType.RoomDisbanded, room_id: number }
 export type UserJoinedEvent = ({ event_type: EventType.UserJoined } & ClientEvents.UserJoinedEvent)
-export type UserLeftEvent = ({ event_type: EventType.UserLeft } & ClientEvents.UserLeftEvent)
+export type UserLeftEvent = ({ event_type: EventType.UserLeft } & ClientEvents.UserLeftEvent);
 export type UserKickedEvent = ({ event_type: EventType.UserKicked } & ClientEvents.UserKickedEvent);
+export type UserModsChangedEvent = ({ event_type: EventType.UserModsChanged } & ClientEvents.UserModsChangedEvent);
+export type UserStatusChangedEvent = ({ event_type: EventType.UserStatusChanged } & ClientEvents.UserStatusChangedEvent);
+export type UserStyleChangedEvent = ({ event_type: EventType.UserStyleChanged } & ClientEvents.UserStyleChangedEvent);
+export type UserTeamChangedEvent = ({ event_type: EventType.UserTeamChanged } & ClientEvents.UserTeamChangedEvent);
 
 export interface HasEvents
 {

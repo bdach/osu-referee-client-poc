@@ -1,3 +1,5 @@
+import { MatchType } from "./common";
+
 export interface RoomJoinedResponse
 {
     room_id: number;
@@ -5,10 +7,4 @@ export interface RoomJoinedResponse
     name: string;
     password: string;
     type: MatchType;
-}
-
-export enum MatchType
-{
-    HeadToHead = "head_to_head",
-    TeamVersus = "team_versus",
 }

@@ -1,4 +1,4 @@
-import {Component} from "react";
+import {Component, useEffect, useRef} from "react";
 import Room from "../models/room";
 import RefereeClient from "../models/referee-client/main";
 import CommandParser from "../models/command-parser";
@@ -16,6 +16,12 @@ export interface Props {
     client: RefereeClient;
     onLogout: () => Promise<void>;
 }
+
+const AlwaysScrollToBottom = () => {
+    const elementRef = useRef<HTMLDivElement>(null);
+    useEffect(() => elementRef.current.scrollIntoView());
+    return <div ref={elementRef} />;
+};
 
 export default class RoomsView extends Component<Props, RoomState>
 {
@@ -49,7 +55,52 @@ export default class RoomsView extends Component<Props, RoomState>
             this.state.rooms.find(room => room.id === msg.room_id),
             { event_type: EventType.UserKicked, ...msg }
         ));
+        props.client.onRoomSettingsChanged(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.RoomSettingsChanged, ...msg }
+        ));
+        props.client.onPlaylistItemChanged(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.PlaylistItemChanged, ...msg }
+        ));
+        props.client.onUserStatusChanged(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.UserStatusChanged, ...msg }
+        ));
+        props.client.onUserModsChanged(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.UserModsChanged, ...msg }
+        ));
+        props.client.onUserStyleChanged(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.UserStyleChanged, ...msg }
+        ));
+        props.client.onUserTeamChanged(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.UserTeamChanged, ...msg }
+        ));
+        props.client.onCountdownStarted(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.CountdownStarted, ...msg }
+        ));
+        props.client.onCountdownStopped(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.CountdownStopped, ...msg }
+        ));
+        props.client.onMatchStarted(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.MatchStarted, ...msg }
+        ));
+        props.client.onMatchAborted(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.MatchAborted, ...msg }
+        ));
+        props.client.onMatchCompleted(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.MatchCompleted, ...msg }
+        ));
     }
+
 
     render() {
         return (
@@ -73,6 +124,7 @@ export default class RoomsView extends Component<Props, RoomState>
                             closeTab: this.closeCurrentStream.bind(this),
                         }))}
                     </ul>
+                    <AlwaysScrollToBottom />
                 </div>
                 <div className='row mx-0 mt-2 mb-3'>
                     <div className='input-group px-0'>
