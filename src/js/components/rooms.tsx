@@ -59,9 +59,17 @@ export default class RoomsView extends Component<Props, RoomState>
             this.state.rooms.find(room => room.id === msg.room_id),
             { event_type: EventType.RoomSettingsChanged, ...msg }
         ));
+        props.client.onPlaylistItemAdded(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.PlaylistItemAdded, ...msg }
+        ));
         props.client.onPlaylistItemChanged(msg => this.postEvent(
             this.state.rooms.find(room => room.id === msg.room_id),
             { event_type: EventType.PlaylistItemChanged, ...msg }
+        ));
+        props.client.onPlaylistItemRemoved(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.PlaylistItemRemoved, ...msg }
         ));
         props.client.onUserStatusChanged(msg => this.postEvent(
             this.state.rooms.find(room => room.id === msg.room_id),

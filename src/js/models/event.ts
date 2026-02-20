@@ -11,7 +11,9 @@ export enum EventType
     MatchAborted = "match-aborted",
     MatchCompleted = "match-completed",
     MatchStarted = "match-started",
+    PlaylistItemAdded = "playlist-item-added",
     PlaylistItemChanged = "playlist-item-changed",
+    PlaylistItemRemoved = "playlist-item-removed",
     RoomDisbanded = "room-disbanded",
     RoomJoined = "room-joined",
     RoomSettingsChanged = "room-settings-changed",
@@ -35,7 +37,9 @@ export type RoomEvent =
 | MatchAbortedEvent
 | MatchCompletedEvent
 | MatchStartedEvent
+| PlaylistItemAddedEvent
 | PlaylistItemChangedEvent
+| PlaylistItemRemovedEvent
 | RoomDisbandedEvent
 | RoomJoinedEvent
 | RoomSettingsChangedEvent
@@ -52,7 +56,9 @@ export type CountdownStoppedEvent = ({ event_type: EventType.CountdownStopped } 
 export type MatchAbortedEvent = ({ event_type: EventType.MatchAborted } & ClientEvents.MatchAbortedEvent);
 export type MatchCompletedEvent = ({ event_type: EventType.MatchCompleted } & ClientEvents.MatchCompletedEvent);
 export type MatchStartedEvent = ({ event_type: EventType.MatchStarted } & ClientEvents.MatchStartedEvent);
+export type PlaylistItemAddedEvent = ({ event_type: EventType.PlaylistItemAdded } & ClientEvents.PlaylistItemAddedEvent);
 export type PlaylistItemChangedEvent = ({ event_type: EventType.PlaylistItemChanged } & ClientEvents.PlaylistItemChangedEvent);
+export type PlaylistItemRemovedEvent = ({ event_type: EventType.PlaylistItemRemoved } & ClientEvents.PlaylistItemRemovedEvent);
 export type RoomJoinedEvent = ({ event_type: EventType.RoomJoined } & ClientResponses.RoomJoinedResponse);
 export type RoomSettingsChangedEvent = ({ event_type: EventType.RoomSettingsChanged } & ClientEvents.RoomSettingsChangedEvent);
 export interface RoomDisbandedEvent { event_type: EventType.RoomDisbanded, room_id: number }

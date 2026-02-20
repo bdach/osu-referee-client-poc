@@ -35,7 +35,7 @@ export interface MatchStartedEvent extends RoomEvent
     teams: null | Partial<Record<number, MatchTeam>>;
 }
 
-export interface PlaylistItemChangedEvent extends RoomEvent
+interface PlaylistItemEventArgs extends RoomEvent
 {
     playlist_item_id: number;
     ruleset_id: number;
@@ -43,7 +43,16 @@ export interface PlaylistItemChangedEvent extends RoomEvent
     required_mods: Mod[];
     allowed_mods: Mod[];
     freestyle: boolean;
-    expired: boolean;
+    was_played: boolean;
+    order: number;
+}
+
+export type PlaylistItemAddedEvent = PlaylistItemEventArgs;
+export type PlaylistItemChangedEvent = PlaylistItemEventArgs;
+
+export interface PlaylistItemRemovedEvent extends RoomEvent
+{
+    playlist_item_id: number;
 }
 
 export interface RoomSettingsChangedEvent extends RoomEvent

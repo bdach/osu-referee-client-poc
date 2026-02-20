@@ -177,6 +177,78 @@ export default class CommandParser
                 break;
             }
 
+            case "additem":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to ADDITEM.");
+
+                let beatmapId: number;
+                let rulesetId: number | undefined = undefined;
+
+                try {
+                    if (split.length === 3)
+                        rulesetId = Number.parseInt(split[1]);
+                    beatmapId = Number.parseInt(split[split.length - 1]);
+                } catch (e) {
+                    throw new Error("Syntax: ADDITEM [ruleset_id] beatmap_id");
+                }
+
+                await this.client.addPlaylistItem(currentRoomId, {
+                    ruleset_id: rulesetId,
+                    beatmap_id: beatmapId,
+                    required_mods: [],
+                    allowed_mods: [],
+                    freestyle: false
+                });
+                break;
+            }
+
+            case "edititem":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to ADDITEM.");
+
+                let playlistItemId: number;
+                let beatmapId: number;
+                let rulesetId: number | undefined = undefined;
+
+                try {
+                    playlistItemId = Number.parseInt(split[1]);
+                    if (split.length === 4)
+                        rulesetId = Number.parseInt(split[split.length - 2]);
+                    beatmapId = Number.parseInt(split[split.length - 1]);
+                } catch (e) {
+                    throw new Error("Syntax: EDITITEM playlist_item_id [ruleset_id] beatmap_id");
+                }
+
+                await this.client.editPlaylistItem(currentRoomId, {
+                    playlist_item_id: playlistItemId,
+                    ruleset_id: rulesetId,
+                    beatmap_id: beatmapId,
+                    required_mods: [],
+                    allowed_mods: [],
+                    freestyle: false
+                });
+                break;
+            }
+
+            case "removeitem":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to REMOVEITEM.");
+
+                let playlistItemId: number;
+
+                try {
+                    playlistItemId = Number.parseInt(split[1]);
+                } catch (e) {
+                    throw new Error("Syntax: REMOVEITEM playlist_item_id")
+                }
+
+                await this.client.removePlaylistItem(currentRoomId, { playlist_item_id: playlistItemId });
+                break;
+            }
+
             case "mods":
             {
                 if (currentRoomId == null)

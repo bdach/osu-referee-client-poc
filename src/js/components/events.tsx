@@ -30,8 +30,14 @@ export default function renderEvent(event: Events.Event, props: Props) {
         case Events.EventType.MatchStarted:
             return MatchStarted(event);
 
+        case Events.EventType.PlaylistItemAdded:
+            return PlaylistItemAdded(event);
+
         case Events.EventType.PlaylistItemChanged:
             return PlaylistItemChanged(event);
+
+        case Events.EventType.PlaylistItemRemoved:
+            return PlaylistItemRemoved(event);
 
         case Events.EventType.RoomDisbanded:
             return RoomDisbanded(props.closeTab);
@@ -128,8 +134,24 @@ export function MatchStarted(event: Events.MatchStartedEvent) {
     )
 }
 
+export function PlaylistItemAdded(event: Events.PlaylistItemAddedEvent) {
+    return (
+        <li className='list-group-item list-group-item-info'>
+            Playlist item {event.playlist_item_id} added.
+            <ul>
+                <li>Beatmap: <a href={`${OSU_WEB_URL}/b/${event.beatmap_id}`}>/b/{event.beatmap_id}</a></li>
+                <li>Ruleset: {Ruleset[event.ruleset_id]}</li>
+                <li>Required mods: {event.required_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{m.settings.length > 0 ? '*' : ''}</span>))}</li>
+                <li>Allowed mods: {event.allowed_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{m.settings.length > 0 ? '*' : ''}</span>))}</li>
+                <li>Freestyle: {event.freestyle ? 'enabled' : 'disabled'}</li>
+                <li>Order: {event.order}</li>
+            </ul>
+        </li>
+    )
+}
+
 export function PlaylistItemChanged(event: Events.PlaylistItemChangedEvent) {
-    if (event.expired) {
+    if (event.was_played) {
         return (
             <li className='list-group-item list-group-item-dark'>Playlist item {event.playlist_item_id} has expired.</li>
         )
@@ -144,8 +166,15 @@ export function PlaylistItemChanged(event: Events.PlaylistItemChangedEvent) {
                 <li>Required mods: {event.required_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{m.settings.length > 0 ? '*' : ''}</span>))}</li>
                 <li>Allowed mods: {event.allowed_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{m.settings.length > 0 ? '*' : ''}</span>))}</li>
                 <li>Freestyle: {event.freestyle ? 'enabled' : 'disabled'}</li>
+                <li>Order: {event.order}</li>
             </ul>
         </li>
+    )
+}
+
+export function PlaylistItemRemoved(event: Events.PlaylistItemRemovedEvent) {
+    return (
+        <li className='list-group-item list-group-item-info'>Playlist item {event.playlist_item_id} removed.</li>
     )
 }
 

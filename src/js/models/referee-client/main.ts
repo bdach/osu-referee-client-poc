@@ -2,11 +2,13 @@ import { HubConnection } from "@microsoft/signalr";
 import { RoomJoinedResponse } from "./responses";
 import * as Events from "./events";
 import {
+    AddPlaylistItemRequest,
     ChangeRoomSettingsRequest,
-    EditCurrentPlaylistItemRequest, MakeRoomRequest,
-    MoveUserRequest,
+    EditCurrentPlaylistItemRequest, EditPlaylistItemRequest, MakeRoomRequest,
+    MoveUserRequest, RemovePlaylistItemRequest,
     StartMatchRequest
 } from "./requests";
+import {PlaylistItemAddedEvent, PlaylistItemRemovedEvent} from "./events";
 
 export default class RefereeClient
 {
@@ -62,6 +64,21 @@ export default class RefereeClient
         await this.connection.invoke("EditCurrentPlaylistItem", roomId, request);
     }
 
+    async addPlaylistItem(roomId: number, request: AddPlaylistItemRequest)
+    {
+        await this.connection.invoke("AddPlaylistItem", roomId, request);
+    }
+
+    async editPlaylistItem(roomId: number, request: EditPlaylistItemRequest)
+    {
+        await this.connection.invoke("EditPlaylistItem", roomId, request);
+    }
+
+    async removePlaylistItem(roomId: number, request: RemovePlaylistItemRequest)
+    {
+        await this.connection.invoke("RemovePlaylistItem", roomId, request);
+    }
+
     async moveUser(roomId: number, request: MoveUserRequest)
     {
         await this.connection.invoke("MoveUser", roomId, request);
@@ -107,9 +124,19 @@ export default class RefereeClient
         this.connection.on("RoomSettingsChanged", callback);
     }
 
+    onPlaylistItemAdded(callback: (event: PlaylistItemAddedEvent) => void)
+    {
+        this.connection.on("PlaylistItemAdded", callback);
+    }
+
     onPlaylistItemChanged(callback: (event: Events.PlaylistItemChangedEvent) => void)
     {
         this.connection.on("PlaylistItemChanged", callback);
+    }
+
+    onPlaylistItemRemoved(callback: (event: PlaylistItemRemovedEvent) => void)
+    {
+        this.connection.on("PlaylistItemRemoved", callback);
     }
 
     onUserStatusChanged(callback: (event: Events.UserStatusChangedEvent) => void)

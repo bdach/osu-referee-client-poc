@@ -7,13 +7,34 @@ export interface ChangeRoomSettingsRequest
     type?: MatchType;
 }
 
-export interface EditCurrentPlaylistItemRequest
+interface EditPlaylistItemRequestParams
 {
     ruleset_id?: number;
     beatmap_id?: number;
     required_mods?: Mod[];
     allowed_mods?: Mod[];
     freestyle?: boolean;
+}
+
+export type EditCurrentPlaylistItemRequest = EditPlaylistItemRequestParams;
+
+export interface AddPlaylistItemRequest
+{
+    ruleset_id: number;
+    beatmap_id: number;
+    required_mods: Mod[];
+    allowed_mods: Mod[];
+    freestyle: boolean;
+}
+
+export interface EditPlaylistItemRequest extends EditPlaylistItemRequestParams
+{
+    playlist_item_id: number;
+}
+
+export interface RemovePlaylistItemRequest
+{
+    playlist_item_id: number;
 }
 
 export interface MakeRoomRequest
