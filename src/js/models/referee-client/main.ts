@@ -8,7 +8,13 @@ import {
     MoveUserRequest, RemovePlaylistItemRequest,
     StartMatchRequest
 } from "./requests";
-import {PlaylistItemAddedEvent, PlaylistItemRemovedEvent} from "./events";
+import {
+    PlaylistItemAddedEvent,
+    PlaylistItemRemovedEvent,
+    RefereeAddedEvent,
+    RefereeInvitedEvent,
+    RefereeRemovedEvent
+} from "./events";
 
 export default class RefereeClient
 {
@@ -52,6 +58,16 @@ export default class RefereeClient
     async kickPlayer(roomId: number, userId: number)
     {
         await this.connection.invoke("KickPlayer", roomId, userId);
+    }
+
+    async addReferee(roomId: number, targetUserId: number)
+    {
+        await this.connection.invoke("AddReferee", roomId, targetUserId);
+    }
+
+    async removeReferee(roomId: number, targetUserId: number)
+    {
+        await this.connection.invoke("RemoveReferee", roomId, targetUserId);
     }
 
     async changeRoomSettings(roomId: number, request: ChangeRoomSettingsRequest)
@@ -117,6 +133,21 @@ export default class RefereeClient
     onUserKicked(callback: (event: Events.UserKickedEvent) => void)
     {
         this.connection.on("UserKicked", callback);
+    }
+
+    onRefereeAdded(callback: (event: RefereeAddedEvent) => void)
+    {
+        this.connection.on("RefereeAdded", callback);
+    }
+
+    onRefereeRemoved(callback: (event: RefereeRemovedEvent) => void)
+    {
+        this.connection.on("RefereeRemoved", callback);
+    }
+
+    onRefereeInvited(callback: (event: RefereeInvitedEvent) => void)
+    {
+        this.connection.on("RefereeInvited", callback);
     }
 
     onRoomSettingsChanged(callback: (event: Events.RoomSettingsChangedEvent) => void)

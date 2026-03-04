@@ -114,6 +114,42 @@ export default class CommandParser
                 break;
             }
 
+            case "addref":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to ADDREF.");
+
+                let userId: number;
+
+                try {
+                    userId = Number.parseInt(split[1]);
+                } catch (e) {
+                    throw new Error("Syntax: ADDREF user_id");
+                }
+
+                await this.client.addReferee(currentRoomId, userId);
+
+                break;
+            }
+
+            case "removeref":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to REMOVEREF.");
+
+                let userId: number;
+
+                try {
+                    userId = Number.parseInt(split[1]);
+                } catch (e) {
+                    throw new Error("Syntax: REMOVEREF user_id");
+                }
+
+                await this.client.removeReferee(currentRoomId, userId);
+
+                break;
+            }
+
             case "name":
             {
                 if (currentRoomId == null)

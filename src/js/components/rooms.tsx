@@ -2,8 +2,9 @@ import {Component, useEffect, useRef} from "react";
 import Room from "../models/room";
 import RefereeClient from "../models/referee-client/main";
 import CommandParser from "../models/command-parser";
-import {Event, EventType, HasEvents} from "../models/event";
-import renderEvent from "./events";
+import {Event, EventType, HasEvents, RoomJoinedEvent} from "../models/event";
+import RenderedEvent from "./events";
+import {RoomJoinedResponse} from "../models/referee-client/responses";
 
 interface RoomState
 {
@@ -54,6 +55,18 @@ export default class RoomsView extends Component<Props, RoomState>
         props.client.onUserKicked(msg => this.postEvent(
             this.state.rooms.find(room => room.id === msg.room_id),
             { event_type: EventType.UserKicked, ...msg }
+        ));
+        props.client.onRefereeAdded(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.RefereeAdded, ...msg }
+        ));
+        props.client.onRefereeInvited(msg => this.postEvent(
+            this.state.activeEventStream,
+            { event_type: EventType.RefereeInvited, ...msg }
+        ));
+        props.client.onRefereeRemoved(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.RefereeRemoved, ...msg }
         ));
         props.client.onRoomSettingsChanged(msg => this.postEvent(
             this.state.rooms.find(room => room.id === msg.room_id),
@@ -128,9 +141,12 @@ export default class RoomsView extends Component<Props, RoomState>
                 </div>
                 <div className='row mx-0 flex-grow-1 flex-shrink-1 overflow-y-auto'>
                     <ul className='list-group mx-0 px-0'>
-                        {this.state.activeEventStream?.events.map(ev => renderEvent(ev, {
-                            closeTab: this.closeCurrentStream.bind(this),
-                        }))}
+                        {this.state.activeEventStream?.events.map(ev =>
+                            <RenderedEvent
+                                event={ev}
+                                closeTab={this.closeCurrentStream.bind(this)}
+                                joinRoom={this.joinRoom.bind(this)} />
+                        )}
                     </ul>
                     <AlwaysScrollToBottom />
                 </div>
@@ -191,15 +207,7 @@ export default class RoomsView extends Component<Props, RoomState>
             if (result != null) {
                 if (result.event_type === EventType.RoomJoined)
                 {
-                    const newRoom: Room = { id: result.room_id, name: result.name, events: [result] };
-                    this.setState(prevState => {
-                        return {
-                            ...prevState,
-                            rooms: prevState.rooms.concat([newRoom]),
-                            activeEventStream: newRoom,
-                            currentCommand: ''
-                        }
-                    })
+                    this.onRoomJoined(result)
                     return;
                 }
 
@@ -255,5 +263,23 @@ export default class RoomsView extends Component<Props, RoomState>
                 }
             })
         }
+    }
+
+    private async joinRoom(roomId: number) {
+        const response = await this.props.client.joinRoom(roomId);
+        const event = { event_type: EventType.RoomJoined, ...response};
+        this.onRoomJoined(event as { event_type: EventType.RoomJoined } & RoomJoinedResponse);
+    }
+
+    private onRoomJoined(event: RoomJoinedEvent) {
+        const newRoom: Room = { id: event.room_id, name: event.name, events: [event] };
+        this.setState(prevState => {
+            return {
+                ...prevState,
+                rooms: prevState.rooms.concat([newRoom]),
+                activeEventStream: newRoom,
+                currentCommand: ''
+            }
+        })
     }
 }

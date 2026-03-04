@@ -1,4 +1,4 @@
-import {Mod, CountdownType, MatchTeam, MatchType} from "./common";
+import {Mod, CountdownType, MatchTeam, MatchType, MatchUserStatus, PlaylistItem} from "./common";
 
 export interface RoomEvent
 {
@@ -35,20 +35,15 @@ export interface MatchStartedEvent extends RoomEvent
     teams: null | Partial<Record<number, MatchTeam>>;
 }
 
-interface PlaylistItemEventArgs extends RoomEvent
+export interface PlaylistItemAddedEvent extends RoomEvent
 {
-    playlist_item_id: number;
-    ruleset_id: number;
-    beatmap_id: number;
-    required_mods: Mod[];
-    allowed_mods: Mod[];
-    freestyle: boolean;
-    was_played: boolean;
-    order: number;
+    playlist_item: PlaylistItem;
 }
 
-export type PlaylistItemAddedEvent = PlaylistItemEventArgs;
-export type PlaylistItemChangedEvent = PlaylistItemEventArgs;
+export interface PlaylistItemChangedEvent extends RoomEvent
+{
+    playlist_item: PlaylistItem;
+}
 
 export interface PlaylistItemRemovedEvent extends RoomEvent
 {
@@ -79,6 +74,18 @@ export interface UserLeftEvent extends RoomEvent
     user_id: number;
 }
 
+export interface RefereeAddedEvent extends RoomEvent
+{
+    user_id: number;
+}
+
+export interface RefereeRemovedEvent extends RoomEvent
+{
+    user_id: number;
+}
+
+export type RefereeInvitedEvent = RoomEvent;
+
 export interface UserModsChangedEvent extends RoomEvent
 {
     user_id: number;
@@ -89,15 +96,6 @@ export interface UserStatusChangedEvent extends RoomEvent
 {
     user_id: number;
     status: MatchUserStatus;
-}
-
-export enum MatchUserStatus
-{
-    Idle = 'idle',
-    Ready = 'ready',
-    Playing = 'playing',
-    FinishedPlay = 'finished_play',
-    Spectating = 'spectating',
 }
 
 export interface UserStyleChangedEvent extends RoomEvent

@@ -1,73 +1,84 @@
 import * as Events from '../models/event';
 import {OSU_WEB_URL} from "../../../config";
-import {CountdownType, MatchTeam, Ruleset} from "../models/referee-client/common";
+import {CountdownType, MatchTeam, PlaylistItem, Player, Ruleset} from "../models/referee-client/common";
 
 export interface Props
 {
+    event: Events.Event;
     closeTab: () => void;
+    joinRoom: (roomId: number) => void;
 }
 
-export default function renderEvent(event: Events.Event, props: Props) {
-    switch (event.event_type) {
+export default function RenderedEvent(props: Props) {
+    switch (props.event.event_type) {
         case Events.EventType.SystemMessage:
-            return SystemMessage(event);
+            return <SystemMessage {...props.event} />;
 
         case Events.EventType.Error:
-            return Error(event);
+            return Error(props.event);
 
         case Events.EventType.CountdownStarted:
-            return CountdownStarted(event);
+            return CountdownStarted(props.event);
 
         case Events.EventType.CountdownStopped:
-            return CountdownStopped(event);
+            return CountdownStopped(props.event);
 
         case Events.EventType.MatchAborted:
-            return MatchAborted(event);
+            return MatchAborted(props.event);
 
         case Events.EventType.MatchCompleted:
-            return MatchCompleted(event);
+            return MatchCompleted(props.event);
 
         case Events.EventType.MatchStarted:
-            return MatchStarted(event);
+            return MatchStarted(props.event);
 
         case Events.EventType.PlaylistItemAdded:
-            return PlaylistItemAdded(event);
+            return PlaylistItemAdded(props.event);
 
         case Events.EventType.PlaylistItemChanged:
-            return PlaylistItemChanged(event);
+            return PlaylistItemChanged(props.event);
 
         case Events.EventType.PlaylistItemRemoved:
-            return PlaylistItemRemoved(event);
+            return PlaylistItemRemoved(props.event);
+
+        case Events.EventType.RefereeAdded:
+            return RefereeAdded(props.event);
+
+        case Events.EventType.RefereeInvited:
+            return RefereeInvited(props.event, props.joinRoom);
+
+        case Events.EventType.RefereeRemoved:
+            return RefereeRemoved(props.event);
 
         case Events.EventType.RoomDisbanded:
             return RoomDisbanded(props.closeTab);
 
         case Events.EventType.RoomJoined:
-            return RoomJoined(event);
+            return <RoomJoined {...props.event} />;
 
         case Events.EventType.RoomSettingsChanged:
-            return RoomSettingsChanged(event);
+            return RoomSettingsChanged(props.event);
 
         case Events.EventType.UserJoined:
-            return UserJoined(event);
+            return UserJoined(props.event);
 
         case Events.EventType.UserLeft:
-            return UserLeft(event);
+            return UserLeft(props.event);
 
         case Events.EventType.UserKicked:
-            return UserKicked(event);
+            return UserKicked(props.event);
 
         case Events.EventType.UserModsChanged:
-            return UserModsChanged(event);
+            return UserModsChanged(props.event);
 
         case Events.EventType.UserStatusChanged:
-            return UserStatusChanged(event);
+            return UserStatusChanged(props.event);
 
         case Events.EventType.UserStyleChanged:
-            return UserStyleChanged(event);
+            return UserStyleChanged(props.event);
 
         case Events.EventType.UserTeamChanged:
-            return UserTeamChanged(event);
+            return UserTeamChanged(props.event);
     }
 }
 
@@ -134,40 +145,40 @@ export function MatchStarted(event: Events.MatchStartedEvent) {
     )
 }
 
+export function PlaylistItemRender(props: {item: PlaylistItem})
+{
+    return (
+        <ul>
+            <li>Beatmap: <a href={`${OSU_WEB_URL}/b/${props.item.beatmap_id}`}>/b/{props.item.beatmap_id}</a></li>
+            <li>Ruleset: {Ruleset[props.item.ruleset_id]}</li>
+            <li>Required mods: {props.item.required_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{Object.keys(m.settings).length > 0 ? '*' : ''}</span>))}</li>
+            <li>Allowed mods: {props.item.allowed_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{Object.keys(m.settings).length > 0 ? '*' : ''}</span>))}</li>
+            <li>Freestyle: {props.item.freestyle ? 'enabled' : 'disabled'}</li>
+            <li>Order: {props.item.order}</li>
+        </ul>
+    )
+}
+
 export function PlaylistItemAdded(event: Events.PlaylistItemAddedEvent) {
     return (
         <li className='list-group-item list-group-item-info'>
-            Playlist item {event.playlist_item_id} added.
-            <ul>
-                <li>Beatmap: <a href={`${OSU_WEB_URL}/b/${event.beatmap_id}`}>/b/{event.beatmap_id}</a></li>
-                <li>Ruleset: {Ruleset[event.ruleset_id]}</li>
-                <li>Required mods: {event.required_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{m.settings.length > 0 ? '*' : ''}</span>))}</li>
-                <li>Allowed mods: {event.allowed_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{m.settings.length > 0 ? '*' : ''}</span>))}</li>
-                <li>Freestyle: {event.freestyle ? 'enabled' : 'disabled'}</li>
-                <li>Order: {event.order}</li>
-            </ul>
+            Playlist item {event.playlist_item.id} added.
+            <PlaylistItemRender item={event.playlist_item} />
         </li>
     )
 }
 
 export function PlaylistItemChanged(event: Events.PlaylistItemChangedEvent) {
-    if (event.was_played) {
+    if (event.playlist_item.was_played) {
         return (
-            <li className='list-group-item list-group-item-dark'>Playlist item {event.playlist_item_id} has expired.</li>
+            <li className='list-group-item list-group-item-dark'>Playlist item {event.playlist_item.id} has expired.</li>
         )
     }
 
     return (
         <li className='list-group-item list-group-item-info'>
-            Playlist item {event.playlist_item_id} changed.
-            <ul>
-                <li>Beatmap: <a href={`${OSU_WEB_URL}/b/${event.beatmap_id}`}>/b/{event.beatmap_id}</a></li>
-                <li>Ruleset: {Ruleset[event.ruleset_id]}</li>
-                <li>Required mods: {event.required_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{m.settings.length > 0 ? '*' : ''}</span>))}</li>
-                <li>Allowed mods: {event.allowed_mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{m.settings.length > 0 ? '*' : ''}</span>))}</li>
-                <li>Freestyle: {event.freestyle ? 'enabled' : 'disabled'}</li>
-                <li>Order: {event.order}</li>
-            </ul>
+            Playlist item {event.playlist_item.id} changed.
+            <PlaylistItemRender item={event.playlist_item} />
         </li>
     )
 }
@@ -175,6 +186,27 @@ export function PlaylistItemChanged(event: Events.PlaylistItemChangedEvent) {
 export function PlaylistItemRemoved(event: Events.PlaylistItemRemovedEvent) {
     return (
         <li className='list-group-item list-group-item-info'>Playlist item {event.playlist_item_id} removed.</li>
+    )
+}
+
+export function RefereeAdded(event: Events.RefereeAddedEvent) {
+    return (
+        <li className='list-group-item list-group-item-info'>Referee ID:{event.user_id} added to room.</li>
+    )
+}
+
+export function RefereeInvited(event: Events.RefereeInvitedEvent, joinRoom: (roomId: number) => void) {
+    return (
+        <li className='list-group-item list-group-item-primary'>
+            You have been invited to referee a room.
+            <a className="link-primary link-underline-primary float-end" onClick={() => joinRoom(event.room_id)}>Join room</a>
+        </li>
+    );
+}
+
+export function RefereeRemoved(event: Events.RefereeRemovedEvent) {
+    return (
+        <li className='list-group-item list-group-item-info'>Referee ID:{event.user_id} removed from room.</li>
     )
 }
 
@@ -187,9 +219,56 @@ export function RoomDisbanded(closeTab: () => void) {
     );
 }
 
+export function PlayerRender(props: {player: Player}) {
+    return (
+        <li>
+            Player ID:{props.player.user_id}
+            <ul>
+                <li>Status: {props.player.status.toString()}</li>
+                <li>
+                    Style:
+                    <ul>
+                        <li>Beatmap: {props.player.style.beatmap_id ? (<a href={`${OSU_WEB_URL}/b/${props.player.style.beatmap_id}`}>/b/{props.player.style.beatmap_id}</a>) : 'default'}</li>
+                        <li>Ruleset: {props.player.style.ruleset_id ? Ruleset[props.player.style.ruleset_id] : 'default'}</li>
+                    </ul>
+                </li>
+                <li>
+                    Mods:
+                    {props.player.mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{Object.keys(m.settings).length > 0 ? '*' : ''}</span>))}
+                </li>
+                {props.player.team && (props.player.team === MatchTeam.Blue ? <span className='badge text-bg-primary'>Blue</span> : <span className='badge text-bg-danger'>Red</span>)}
+            </ul>
+        </li>
+    )
+}
+
 export function RoomJoined(event: Events.RoomJoinedEvent) {
     return (
-        <li className='list-group-item list-group-item-success'>Welcome to room {event.name} (ID: {event.room_id})</li>
+        <li className='list-group-item list-group-item-success'>
+            Welcome to room {event.name} (ID: {event.room_id})
+            <ul>
+                <li>Chat channel ID: {event.chat_channel_id}</li>
+                <li>Mode: {event.type.toString()}</li>
+                <li>
+                    Playlist items:
+                    <ol>
+                        {event.playlist.map(item => (
+                            <li key={item.id}>
+                                Playlist item {item.id}
+                                <PlaylistItemRender item={item} />
+                            </li>
+                        ))}
+                    </ol>
+                </li>
+                <li>
+                    Players:
+                    <ul>
+                        {event.players.map(player => <PlayerRender player={player} />)}
+                    </ul>
+                </li>
+                <li>Referees: {event.referees.map(ref => ref.user_id).join(", ")}</li>
+            </ul>
+        </li>
     );
 }
 
@@ -220,6 +299,7 @@ export function UserLeft(event: Events.UserLeftEvent) {
 }
 
 export function UserKicked(event: Events.UserKickedEvent) {
+    // TODO: the referee can get kicked themselves. the client should detect this somehow and inform the user more properly.
     return (
         <li className='list-group-item list-group-item-warning'>Player ID:{event.kicked_user_id} has been kicked by ID:{event.kicking_user_id}.</li>
     );
@@ -229,7 +309,7 @@ export function UserModsChanged(event: Events.UserModsChangedEvent) {
     return (
         <li className='list-group-item list-group-item-info'>
             Player ID:{event.user_id} changed user mods to
-            {event.mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{m.settings.length > 0 ? '*' : ''}</span>))}
+            {event.mods.map(m => (<span className='badge text-bg-info'>{m.acronym}{Object.keys(m.settings).length > 0 ? '*' : ''}</span>))}
         </li>
     )
 }

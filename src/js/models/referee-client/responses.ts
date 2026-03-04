@@ -1,4 +1,4 @@
-import { MatchType } from "./common";
+import { MatchType, Player, PlaylistItem, Referee } from "./common";
 
 export interface RoomJoinedResponse
 {
@@ -7,4 +7,7 @@ export interface RoomJoinedResponse
     name: string;
     password: string;
     type: MatchType;
+    playlist: PlaylistItem[];
+    players: Player[];
+    referees: Referee[];
 }
