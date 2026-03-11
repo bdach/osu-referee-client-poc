@@ -60,6 +60,11 @@ export default class RefereeClient
         await this.connection.invoke("KickPlayer", roomId, userId);
     }
 
+    async banUser(roomId: number, userId: number)
+    {
+        await this.connection.invoke("BanUser", roomId, userId);
+    }
+
     async addReferee(roomId: number, targetUserId: number)
     {
         await this.connection.invoke("AddReferee", roomId, targetUserId);
@@ -133,6 +138,11 @@ export default class RefereeClient
     onUserKicked(callback: (event: Events.UserKickedEvent) => void)
     {
         this.connection.on("UserKicked", callback);
+    }
+
+    onUserBanned(callback: (event: Events.UserBannedEvent) => void)
+    {
+        this.connection.on("UserBanned", callback);
     }
 
     onRefereeAdded(callback: (event: RefereeAddedEvent) => void)

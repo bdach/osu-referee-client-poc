@@ -114,6 +114,24 @@ export default class CommandParser
                 break;
             }
 
+            case "ban":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to BAN.");
+
+                let userId: number;
+
+                try {
+                    userId = Number.parseInt(split[1]);
+                } catch (e) {
+                    throw new Error("Syntax: BAN user_id");
+                }
+
+                await this.client.banUser(currentRoomId, userId);
+
+                break;
+            }
+
             case "addref":
             {
                 if (currentRoomId == null)

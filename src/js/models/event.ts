@@ -20,6 +20,7 @@ export enum EventType
     RoomDisbanded = "room-disbanded",
     RoomJoined = "room-joined",
     RoomSettingsChanged = "room-settings-changed",
+    UserBanned = "user-banned",
     UserJoined = "user-joined",
     UserKicked = "user-kicked",
     UserLeft = "user-left",
@@ -49,6 +50,7 @@ export type RoomEvent =
 | RoomDisbandedEvent
 | RoomJoinedEvent
 | RoomSettingsChangedEvent
+| UserBannedEvent
 | UserJoinedEvent
 | UserKickedEvent
 | UserLeftEvent
@@ -71,6 +73,7 @@ export type RefereeRemovedEvent = ({ event_type: EventType.RefereeRemoved } & Cl
 export type RoomJoinedEvent = ({ event_type: EventType.RoomJoined } & ClientResponses.RoomJoinedResponse);
 export type RoomSettingsChangedEvent = ({ event_type: EventType.RoomSettingsChanged } & ClientEvents.RoomSettingsChangedEvent);
 export interface RoomDisbandedEvent { event_type: EventType.RoomDisbanded, room_id: number }
+export type UserBannedEvent = ({ event_type: EventType.UserBanned } & ClientEvents.UserBannedEvent)
 export type UserJoinedEvent = ({ event_type: EventType.UserJoined } & ClientEvents.UserJoinedEvent)
 export type UserLeftEvent = ({ event_type: EventType.UserLeft } & ClientEvents.UserLeftEvent);
 export type UserKickedEvent = ({ event_type: EventType.UserKicked } & ClientEvents.UserKickedEvent);

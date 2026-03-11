@@ -56,6 +56,10 @@ export default class RoomsView extends Component<Props, RoomState>
             this.state.rooms.find(room => room.id === msg.room_id),
             { event_type: EventType.UserKicked, ...msg }
         ));
+        props.client.onUserBanned(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.UserBanned, ...msg }
+        ));
         props.client.onRefereeAdded(msg => this.postEvent(
             this.state.rooms.find(room => room.id === msg.room_id),
             { event_type: EventType.RefereeAdded, ...msg }

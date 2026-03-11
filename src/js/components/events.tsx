@@ -68,6 +68,9 @@ export default function RenderedEvent(props: Props) {
         case Events.EventType.UserKicked:
             return UserKicked(props.event);
 
+        case Events.EventType.UserBanned:
+            return UserBanned(props.event);
+
         case Events.EventType.UserModsChanged:
             return UserModsChanged(props.event);
 
@@ -302,6 +305,12 @@ export function UserKicked(event: Events.UserKickedEvent) {
     // TODO: the referee can get kicked themselves. the client should detect this somehow and inform the user more properly.
     return (
         <li className='list-group-item list-group-item-warning'>Player ID:{event.kicked_user_id} has been kicked by ID:{event.kicking_user_id}.</li>
+    );
+}
+
+export function UserBanned(event: Events.UserBannedEvent) {
+    return (
+        <li className='list-group-item list-group-item-danger'>Player ID:{event.banned_user_id} has been banned by ID:{event.banning_user_id}.</li>
     );
 }
 

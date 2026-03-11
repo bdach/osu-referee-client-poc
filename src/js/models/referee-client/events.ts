@@ -69,6 +69,12 @@ export interface UserKickedEvent extends RoomEvent
     kicking_user_id: number;
 }
 
+export interface UserBannedEvent extends RoomEvent
+{
+    banned_user_id: number;
+    banning_user_id: number;
+}
+
 export interface UserLeftEvent extends RoomEvent
 {
     user_id: number;
