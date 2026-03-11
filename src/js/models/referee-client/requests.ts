@@ -50,6 +50,11 @@ export interface MoveUserRequest
     team: MatchTeam;
 }
 
+export interface SetLockStateRequest
+{
+    locked: boolean;
+}
+
 export interface StartMatchRequest
 {
     countdown: number | null;

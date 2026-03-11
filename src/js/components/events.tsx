@@ -32,6 +32,9 @@ export default function RenderedEvent(props: Props) {
         case Events.EventType.MatchStarted:
             return MatchStarted(props.event);
 
+        case Events.EventType.MatchStateChanged:
+            return MatchStateChanged(props.event);
+
         case Events.EventType.PlaylistItemAdded:
             return PlaylistItemAdded(props.event);
 
@@ -148,6 +151,12 @@ export function MatchStarted(event: Events.MatchStartedEvent) {
     )
 }
 
+export function MatchStateChanged(event: Events.MatchStateChangedEvent) {
+    return (
+        <li className='list-group-item list-group-item-primary'>Match state changed to {JSON.stringify(event.state)}.</li>
+    )
+}
+
 export function PlaylistItemRender(props: {item: PlaylistItem})
 {
     return (
@@ -251,7 +260,7 @@ export function RoomJoined(event: Events.RoomJoinedEvent) {
             Welcome to room {event.name} (ID: {event.room_id})
             <ul>
                 <li>Chat channel ID: {event.chat_channel_id}</li>
-                <li>Mode: {event.type.toString()}</li>
+                <li>State: {JSON.stringify(event.state)}</li>
                 <li>
                     Playlist items:
                     <ol>

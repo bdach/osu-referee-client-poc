@@ -70,3 +70,14 @@ export interface Style
     ruleset_id?: keyof typeof Ruleset | null;
     beatmap_id?: number | null;
 }
+
+export interface MatchState
+{
+    type: MatchType;
+}
+
+export interface TeamVersusRoomState extends MatchState
+{
+    type: MatchType.TeamVersus;
+    locked: boolean;
+}

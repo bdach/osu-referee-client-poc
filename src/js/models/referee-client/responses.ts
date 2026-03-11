@@ -1,4 +1,4 @@
-import { MatchType, Player, PlaylistItem, Referee } from "./common";
+import {Player, PlaylistItem, Referee, MatchState} from "./common";
 
 export interface RoomJoinedResponse
 {
@@ -6,7 +6,7 @@ export interface RoomJoinedResponse
     chat_channel_id: number;
     name: string;
     password: string;
-    type: MatchType;
+    state: MatchState;
     playlist: PlaylistItem[];
     players: Player[];
     referees: Referee[];

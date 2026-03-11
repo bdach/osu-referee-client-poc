@@ -355,6 +355,18 @@ export default class CommandParser
                 break;
             }
 
+            case "lock":
+            case "unlock":
+            {
+                if (currentRoomId == null)
+                    throw new Error(`Must be in a room to ${split[0].toUpperCase()}.`);
+
+                const locked = split[0] === "lock";
+
+                await this.client.setLockState(currentRoomId, { locked });
+                break;
+            }
+
             case "start":
             {
                 if (currentRoomId == null)

@@ -11,6 +11,7 @@ export enum EventType
     MatchAborted = "match-aborted",
     MatchCompleted = "match-completed",
     MatchStarted = "match-started",
+    MatchStateChanged = "match-state-changed",
     PlaylistItemAdded = "playlist-item-added",
     PlaylistItemChanged = "playlist-item-changed",
     PlaylistItemRemoved = "playlist-item-removed",
@@ -41,6 +42,7 @@ export type RoomEvent =
 | MatchAbortedEvent
 | MatchCompletedEvent
 | MatchStartedEvent
+| MatchStateChangedEvent
 | PlaylistItemAddedEvent
 | PlaylistItemChangedEvent
 | PlaylistItemRemovedEvent
@@ -64,6 +66,7 @@ export type CountdownStoppedEvent = ({ event_type: EventType.CountdownStopped } 
 export type MatchAbortedEvent = ({ event_type: EventType.MatchAborted } & ClientEvents.MatchAbortedEvent);
 export type MatchCompletedEvent = ({ event_type: EventType.MatchCompleted } & ClientEvents.MatchCompletedEvent);
 export type MatchStartedEvent = ({ event_type: EventType.MatchStarted } & ClientEvents.MatchStartedEvent);
+export type MatchStateChangedEvent = ({ event_type: EventType.MatchStateChanged } & ClientEvents.MatchStateChangedEvent);
 export type PlaylistItemAddedEvent = ({ event_type: EventType.PlaylistItemAdded } & ClientEvents.PlaylistItemAddedEvent);
 export type PlaylistItemChangedEvent = ({ event_type: EventType.PlaylistItemChanged } & ClientEvents.PlaylistItemChangedEvent);
 export type PlaylistItemRemovedEvent = ({ event_type: EventType.PlaylistItemRemoved } & ClientEvents.PlaylistItemRemovedEvent);

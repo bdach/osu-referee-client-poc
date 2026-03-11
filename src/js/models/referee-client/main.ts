@@ -5,7 +5,7 @@ import {
     AddPlaylistItemRequest,
     ChangeRoomSettingsRequest,
     EditCurrentPlaylistItemRequest, EditPlaylistItemRequest, MakeRoomRequest,
-    MoveUserRequest, RemovePlaylistItemRequest,
+    MoveUserRequest, RemovePlaylistItemRequest, SetLockStateRequest,
     StartMatchRequest
 } from "./requests";
 import {
@@ -105,6 +105,11 @@ export default class RefereeClient
         await this.connection.invoke("MoveUser", roomId, request);
     }
 
+    async setLockState(roomId: number, request: SetLockStateRequest)
+    {
+        await this.connection.invoke("SetLockState", roomId, request);
+    }
+
     async startMatch(roomId: number, request: StartMatchRequest)
     {
         await this.connection.invoke("StartMatch", roomId, request);
@@ -163,6 +168,11 @@ export default class RefereeClient
     onRoomSettingsChanged(callback: (event: Events.RoomSettingsChangedEvent) => void)
     {
         this.connection.on("RoomSettingsChanged", callback);
+    }
+
+    onMatchStateChanged(callback: (event: Events.MatchStateChangedEvent) => void)
+    {
+        this.connection.on("MatchStateChanged", callback);
     }
 
     onPlaylistItemAdded(callback: (event: PlaylistItemAddedEvent) => void)

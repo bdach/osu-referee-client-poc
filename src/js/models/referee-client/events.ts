@@ -1,4 +1,4 @@
-import {Mod, CountdownType, MatchTeam, MatchType, MatchUserStatus, PlaylistItem} from "./common";
+import {Mod, CountdownType, MatchTeam, MatchType, MatchUserStatus, PlaylistItem, MatchState} from "./common";
 
 export interface RoomEvent
 {
@@ -56,6 +56,11 @@ export interface RoomSettingsChangedEvent extends RoomEvent
     password: string;
     type: MatchType;
     playlist_item_id: number;
+}
+
+export interface MatchStateChangedEvent extends RoomEvent
+{
+    state: MatchState;
 }
 
 export interface UserJoinedEvent extends RoomEvent
