@@ -18,6 +18,7 @@ export enum EventType
     RefereeAdded = "referee-added",
     RefereeInvited = "referee-invited",
     RefereeRemoved = "referee-removed",
+    RollCompleted = "roll-completed",
     RoomDisbanded = "room-disbanded",
     RoomJoined = "room-joined",
     RoomSettingsChanged = "room-settings-changed",
@@ -49,6 +50,7 @@ export type RoomEvent =
 | RefereeAddedEvent
 | RefereeInvitedEvent
 | RefereeRemovedEvent
+| RollCompletedEvent
 | RoomDisbandedEvent
 | RoomJoinedEvent
 | RoomSettingsChangedEvent
@@ -73,6 +75,7 @@ export type PlaylistItemRemovedEvent = ({ event_type: EventType.PlaylistItemRemo
 export type RefereeAddedEvent = ({ event_type: EventType.RefereeAdded } & ClientEvents.RefereeAddedEvent);
 export type RefereeInvitedEvent = ({ event_type: EventType.RefereeInvited } & ClientEvents.RefereeInvitedEvent);
 export type RefereeRemovedEvent = ({ event_type: EventType.RefereeRemoved } & ClientEvents.RefereeRemovedEvent);
+export type RollCompletedEvent = ({ event_type: EventType.RollCompleted } & ClientEvents.RollCompletedEvent);
 export type RoomJoinedEvent = ({ event_type: EventType.RoomJoined } & ClientResponses.RoomJoinedResponse);
 export type RoomSettingsChangedEvent = ({ event_type: EventType.RoomSettingsChanged } & ClientEvents.RoomSettingsChangedEvent);
 export interface RoomDisbandedEvent { event_type: EventType.RoomDisbanded, room_id: number }

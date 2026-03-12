@@ -37,6 +37,11 @@ export interface RemovePlaylistItemRequest
     playlist_item_id: number;
 }
 
+export interface RollRequest
+{
+    max: number;
+}
+
 export interface MakeRoomRequest
 {
     ruleset_id: number;

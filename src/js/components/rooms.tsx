@@ -92,6 +92,10 @@ export default class RoomsView extends Component<Props, RoomState>
             this.state.rooms.find(room => room.id === msg.room_id),
             { event_type: EventType.PlaylistItemRemoved, ...msg }
         ));
+        props.client.onRollCompleted(msg => this.postEvent(
+            this.state.rooms.find(room => room.id === msg.room_id),
+            { event_type: EventType.RollCompleted, ...msg }
+        ));
         props.client.onUserStatusChanged(msg => this.postEvent(
             this.state.rooms.find(room => room.id === msg.room_id),
             { event_type: EventType.UserStatusChanged, ...msg }

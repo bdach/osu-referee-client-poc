@@ -303,6 +303,24 @@ export default class CommandParser
                 break;
             }
 
+            case "roll":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to ROLL.");
+
+                let max = 100;
+                if (split.length > 1) {
+                    try {
+                        max = Number.parseInt(split[1]);
+                    } catch (e) {
+                        throw new Error("Syntax: ROLL [max]");
+                    }
+                }
+
+                await this.client.roll(currentRoomId, { max });
+                break;
+            }
+
             case "mods":
             {
                 if (currentRoomId == null)

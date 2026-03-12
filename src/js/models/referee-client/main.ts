@@ -5,7 +5,7 @@ import {
     AddPlaylistItemRequest,
     ChangeRoomSettingsRequest,
     EditCurrentPlaylistItemRequest, EditPlaylistItemRequest, MakeRoomRequest,
-    MoveUserRequest, RemovePlaylistItemRequest, SetLockStateRequest,
+    MoveUserRequest, RemovePlaylistItemRequest, RollRequest, SetLockStateRequest,
     StartMatchRequest
 } from "./requests";
 import {
@@ -13,7 +13,7 @@ import {
     PlaylistItemRemovedEvent,
     RefereeAddedEvent,
     RefereeInvitedEvent,
-    RefereeRemovedEvent
+    RefereeRemovedEvent, RollCompletedEvent
 } from "./events";
 
 export default class RefereeClient
@@ -98,6 +98,11 @@ export default class RefereeClient
     async removePlaylistItem(roomId: number, request: RemovePlaylistItemRequest)
     {
         await this.connection.invoke("RemovePlaylistItem", roomId, request);
+    }
+
+    async roll(roomId: number, request: RollRequest)
+    {
+        await this.connection.invoke("Roll", roomId, request);
     }
 
     async moveUser(roomId: number, request: MoveUserRequest)
@@ -188,6 +193,11 @@ export default class RefereeClient
     onPlaylistItemRemoved(callback: (event: PlaylistItemRemovedEvent) => void)
     {
         this.connection.on("PlaylistItemRemoved", callback);
+    }
+
+    onRollCompleted(callback: (event: RollCompletedEvent) => void)
+    {
+        this.connection.on("RollCompleted", callback);
     }
 
     onUserStatusChanged(callback: (event: Events.UserStatusChangedEvent) => void)

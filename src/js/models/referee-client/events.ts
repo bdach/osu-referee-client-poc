@@ -50,6 +50,13 @@ export interface PlaylistItemRemovedEvent extends RoomEvent
     playlist_item_id: number;
 }
 
+export interface RollCompletedEvent extends RoomEvent
+{
+    user_id: number;
+    max: number;
+    result: number;
+}
+
 export interface RoomSettingsChangedEvent extends RoomEvent
 {
     name: string;

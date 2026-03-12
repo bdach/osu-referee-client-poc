@@ -44,6 +44,9 @@ export default function RenderedEvent(props: Props) {
         case Events.EventType.PlaylistItemRemoved:
             return PlaylistItemRemoved(props.event);
 
+        case Events.EventType.RollCompleted:
+            return RollCompleted(props.event);
+
         case Events.EventType.RefereeAdded:
             return RefereeAdded(props.event);
 
@@ -198,6 +201,12 @@ export function PlaylistItemChanged(event: Events.PlaylistItemChangedEvent) {
 export function PlaylistItemRemoved(event: Events.PlaylistItemRemovedEvent) {
     return (
         <li className='list-group-item list-group-item-info'>Playlist item {event.playlist_item_id} removed.</li>
+    )
+}
+
+export function RollCompleted(event: Events.RollCompletedEvent) {
+    return (
+        <li className='list-group-item list-group-item-primary'>User ID:{event.user_id} rolled {event.result} / {event.max}.</li>
     )
 }
 
