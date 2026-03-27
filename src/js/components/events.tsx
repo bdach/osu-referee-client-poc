@@ -302,6 +302,7 @@ export function RoomSettingsChanged(event: Events.RoomSettingsChangedEvent) {
                 <li>Password: {event.password}</li>
                 <li>Mode: {event.type.toString()}</li>
                 <li>Playlist item: {event.playlist_item_id}</li>
+                <li>Max participants: {event.max_participants?.toString() ?? "no limit"}</li>
             </ul>
         </li>
     )

@@ -373,6 +373,42 @@ export default class CommandParser
                 break;
             }
 
+            case "size":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to SIZE.");
+
+                let size: number;
+
+                try {
+                    size = Number.parseInt(split[1]);
+                } catch (e) {
+                    throw new Error("Syntax: SIZE number_of_players");
+                }
+
+                await this.client.changeRoomSettings(currentRoomId, { max_participants: size });
+                break;
+            }
+
+            case "slot":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to SLOT.");
+
+                let userId: number;
+                let slot: number;
+
+                try {
+                    userId = Number.parseInt(split[1]);
+                    slot = Number.parseInt(split[2]);
+                } catch (e) {
+                    throw new Error("Syntax: SLOT user_id slot_number");
+                }
+
+                await this.client.moveUser(currentRoomId, { user_id: userId, slot })
+                break;
+            }
+
             case "lock":
             case "unlock":
             {

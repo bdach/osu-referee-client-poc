@@ -74,10 +74,6 @@ export interface Style
 export interface MatchState
 {
     type: MatchType;
-}
-
-export interface TeamVersusRoomState extends MatchState
-{
-    type: MatchType.TeamVersus;
     locked: boolean;
+    slots: (number | null)[] | null;
 }

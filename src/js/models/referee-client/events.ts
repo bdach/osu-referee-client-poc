@@ -33,6 +33,7 @@ export interface MatchStartedEvent extends RoomEvent
     playlist_item_id: number;
     type: MatchType;
     teams: null | Partial<Record<number, MatchTeam>>;
+    slots: null | Partial<Record<number, number>>;
 }
 
 export interface PlaylistItemAddedEvent extends RoomEvent
@@ -63,6 +64,7 @@ export interface RoomSettingsChangedEvent extends RoomEvent
     password: string;
     type: MatchType;
     playlist_item_id: number;
+    max_participants: number | null;
 }
 
 export interface MatchStateChangedEvent extends RoomEvent

@@ -5,6 +5,7 @@ export interface ChangeRoomSettingsRequest
     name?: string;
     password?: string;
     type?: MatchType;
+    max_participants?: number | null;
 }
 
 interface EditPlaylistItemRequestParams
@@ -47,12 +48,14 @@ export interface MakeRoomRequest
     ruleset_id: number;
     beatmap_id: number;
     name: string;
+    max_participants?: number;
 }
 
 export interface MoveUserRequest
 {
     user_id: number;
-    team: MatchTeam;
+    team?: MatchTeam | null;
+    slot?: number | null;
 }
 
 export interface SetLockStateRequest
