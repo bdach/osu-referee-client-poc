@@ -11,3 +11,8 @@ export interface RoomJoinedResponse
     players: Player[];
     referees: Referee[];
 }
+
+export interface ListRoomsResponse
+{
+    room_ids: number[];
+}

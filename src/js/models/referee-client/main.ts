@@ -1,5 +1,5 @@
 import { HubConnection } from "@microsoft/signalr";
-import { RoomJoinedResponse } from "./responses";
+import {ListRoomsResponse, RoomJoinedResponse} from "./responses";
 import * as Events from "./events";
 import {
     AddPlaylistItemRequest,
@@ -73,6 +73,11 @@ export default class RefereeClient
     async removeReferee(roomId: number, targetUserId: number)
     {
         await this.connection.invoke("RemoveReferee", roomId, targetUserId);
+    }
+
+    async listRooms() : Promise<ListRoomsResponse>
+    {
+        return await this.connection.invoke("ListRooms");
     }
 
     async changeRoomSettings(roomId: number, request: ChangeRoomSettingsRequest)

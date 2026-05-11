@@ -1,5 +1,5 @@
 import RefereeClient from "./referee-client/main";
-import {EventType, RoomEvent} from "./event";
+import {EventType, Event} from "./event";
 import {Mod, MatchTeam, MatchType} from "./referee-client/common";
 
 export default class CommandParser
@@ -11,7 +11,7 @@ export default class CommandParser
         this.client = client;
     }
 
-    async execute(currentRoomId: number | undefined, command: string) : Promise<undefined | RoomEvent>
+    async execute(currentRoomId: number | undefined, command: string) : Promise<undefined | Event>
     {
         const split = command.split(/\s+/);
 
@@ -166,6 +166,14 @@ export default class CommandParser
                 await this.client.removeReferee(currentRoomId, userId);
 
                 break;
+            }
+
+            case "list":
+            {
+                const rooms = await this.client.listRooms();
+                const message = 'Joined rooms: ' + rooms.room_ids.join(', ');
+
+                return { event_type: EventType.SystemMessage, message };
             }
 
             case "name":

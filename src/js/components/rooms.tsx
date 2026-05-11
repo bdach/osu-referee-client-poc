@@ -223,7 +223,11 @@ export default class RoomsView extends Component<Props, RoomState>
                     return;
                 }
 
-                this.postEvent(this.state.rooms.find(room => room.id === result.room_id), result);
+                const target = 'room_id' in result
+                    ? this.state.rooms.find(room => room.id === result.room_id)
+                    : this.state.activeEventStream;
+
+                this.postEvent(target, result);
             }
         } catch (error) {
             this.postEvent(this.state.activeEventStream, {
