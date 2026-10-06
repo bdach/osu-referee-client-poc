@@ -6,6 +6,7 @@ export interface RoomJoinedResponse
     chat_channel_id: number;
     name: string;
     password: string;
+    max_participants: number;
     state: MatchState;
     playlist: PlaylistItem[];
     players: Player[];

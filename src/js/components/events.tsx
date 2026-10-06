@@ -150,7 +150,10 @@ export function MatchCompleted(event: Events.MatchCompletedEvent) {
 
 export function MatchStarted(event: Events.MatchStartedEvent) {
     return (
-        <li className='list-group-item list-group-item-primary'>Starting match (playlistItem:{event.playlist_item_id}).</li>
+        <li className='list-group-item list-group-item-primary'>
+            Starting match (playlistItem:{event.playlist_item_id}).
+            Teams: {JSON.stringify(event.teams)}
+        </li>
     )
 }
 
@@ -270,6 +273,7 @@ export function RoomJoined(event: Events.RoomJoinedEvent) {
             <ul>
                 <li>Chat channel ID: {event.chat_channel_id}</li>
                 <li>State: {JSON.stringify(event.state)}</li>
+                <li>Participant limit: {event.max_participants}</li>
                 <li>
                     Playlist items:
                     <ol>

@@ -24,13 +24,15 @@ export default class CommandParser
             {
                 let rulesetId: number;
                 let beatmapId: number;
+                let maxParticipants: number;
                 let roomName: string;
 
                 try
                 {
                     rulesetId = Number.parseInt(split[1]);
                     beatmapId = Number.parseInt(split[2]);
-                    roomName = split.slice(3).join(' ');
+                    maxParticipants = Number.parseInt(split[3]);
+                    roomName = split.slice(4).join(' ');
                 } catch (e) {
                     throw new Error("Syntax: MAKE ruleset_id beatmap_id room_name");
                 }
@@ -38,6 +40,7 @@ export default class CommandParser
                 const response = await this.client.makeRoom({
                     ruleset_id: rulesetId,
                     beatmap_id: beatmapId,
+                    max_participants: maxParticipants,
                     name: roomName
                 });
                 return { event_type: EventType.RoomJoined, ...response };
