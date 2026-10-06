@@ -1,4 +1,4 @@
-import {Mod, CountdownType, MatchTeam, MatchType, MatchUserStatus, PlaylistItem, MatchState} from "./common";
+import {Mod, CountdownType, MatchTeam, MatchType, MatchUserStatus, PlaylistItem, MatchState, QueueMode} from "./common";
 
 export interface RoomEvent
 {
@@ -63,6 +63,7 @@ export interface RoomSettingsChangedEvent extends RoomEvent
     name: string;
     password: string;
     type: MatchType;
+    queue_mode: QueueMode;
     playlist_item_id: number;
     max_participants: number | null;
 }

@@ -4,6 +4,13 @@ export enum MatchType
     TeamVersus = "team_versus",
 }
 
+export enum QueueMode
+{
+    HostOnly = "host_only",
+    AllPlayers = "all_players",
+    AllPlayersRoundRobin = "all_players_round_robin",
+}
+
 export interface Mod
 {
     acronym: string;

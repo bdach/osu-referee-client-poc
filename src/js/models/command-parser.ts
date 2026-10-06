@@ -1,6 +1,6 @@
 import RefereeClient from "./referee-client/main";
 import {EventType, Event} from "./event";
-import {Mod, MatchTeam, MatchType} from "./referee-client/common";
+import {Mod, MatchTeam, MatchType, QueueMode} from "./referee-client/common";
 
 export default class CommandParser
 {
@@ -219,6 +219,23 @@ export default class CommandParser
                 }
 
                 await this.client.changeRoomSettings(currentRoomId, { type })
+                break;
+            }
+
+            case "queue":
+            {
+                if (currentRoomId == null)
+                    throw new Error("Must be in a room to QUEUE.");
+
+                let queueMode: QueueMode;
+
+                try {
+                    queueMode = split[1] as QueueMode;
+                } catch (e) {
+                    throw new Error("Syntax: QUEUE {host_only|all_players|all_players_round_robin}");
+                }
+
+                await this.client.changeRoomSettings(currentRoomId, { queue_mode: queueMode })
                 break;
             }
 

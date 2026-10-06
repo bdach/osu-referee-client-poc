@@ -1,10 +1,11 @@
-import {Mod, MatchTeam, MatchType} from "./common";
+import {Mod, MatchTeam, MatchType, QueueMode} from "./common";
 
 export interface ChangeRoomSettingsRequest
 {
     name?: string;
     password?: string;
     type?: MatchType;
+    queue_mode?: QueueMode;
     max_participants?: number | null;
 }
 

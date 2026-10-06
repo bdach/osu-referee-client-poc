@@ -274,6 +274,7 @@ export function RoomJoined(event: Events.RoomJoinedEvent) {
                 <li>Chat channel ID: {event.chat_channel_id}</li>
                 <li>State: {JSON.stringify(event.state)}</li>
                 <li>Participant limit: {event.max_participants}</li>
+                <li>Queue mode: {event.queue_mode}</li>
                 <li>
                     Playlist items:
                     <ol>
@@ -304,7 +305,8 @@ export function RoomSettingsChanged(event: Events.RoomSettingsChangedEvent) {
             <ul>
                 <li>Name: {event.name}</li>
                 <li>Password: {event.password}</li>
-                <li>Mode: {event.type.toString()}</li>
+                <li>Type: {event.type.toString()}</li>
+                <li>Queue mode: {event.queue_mode.toString()}</li>
                 <li>Playlist item: {event.playlist_item_id}</li>
                 <li>Max participants: {event.max_participants?.toString() ?? "no limit"}</li>
             </ul>

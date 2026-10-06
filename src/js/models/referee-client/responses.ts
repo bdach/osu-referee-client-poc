@@ -1,4 +1,4 @@
-import {Player, PlaylistItem, Referee, MatchState} from "./common";
+import {Player, PlaylistItem, Referee, MatchState, QueueMode} from "./common";
 
 export interface RoomJoinedResponse
 {
@@ -8,6 +8,7 @@ export interface RoomJoinedResponse
     password: string;
     max_participants: number;
     state: MatchState;
+    queue_mode: QueueMode;
     playlist: PlaylistItem[];
     players: Player[];
     referees: Referee[];
